@@ -1,0 +1,123 @@
+<div class="main-header">
+    <h5> <a routerLink="/productstocktake">Stock Take</a> 
+      <i class="bi bi-chevron-right"></i>Details
+    </h5>
+  </div>
+  
+  <div class="card">
+    <div class="card-body">
+      <app-action-menu [toggleSave]="toggleSave" (onSave)="onSave()"></app-action-menu>
+      <form>
+        <div class="form-group row">
+          <label for="partNo" class="col-sm-2 col-form-label">Part No</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="partNo" disabled [(ngModel)]="product.partNo" name="partNo">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="cDescription" class="col-sm-2 col-form-label">C Description</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="cDescription" disabled [(ngModel)]="product.cDescription" name="cDescription">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="brand" class="col-sm-2 col-form-label">Brand</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="brand" disabled [(ngModel)]="product.brand" name="brand">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="cCode" class="col-sm-2 col-form-label">C Code</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="cCode" disabled [(ngModel)]="product.cCode" name="cCode">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="application" class="col-sm-2 col-form-label">Application</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="application" disabled [(ngModel)]="product.application" name="application">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="mainGroup" class="col-sm-2 col-form-label">Main Group</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="mainGroup" disabled [(ngModel)]="product.mainGroup" name="mainGroup">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="aRef" class="col-sm-2 col-form-label">A Ref</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="aRef" disabled [(ngModel)]="product.aRef" name="aRef">
+          </div>
+        </div>
+      </form>
+      <!-- NAV TABS-->
+      <div class="tabs">
+        <ul class="nav nav-tabs" id="productsTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="supplierTab" data-bs-target="#supplierTabContent" data-bs-toggle="tab">
+              Reconcile
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!--NAV CONTENTS-->
+      <div class="tab-content" id="productTabContent">
+        <div class="tab-pane fade show active mt-10" id="supplierTabContent" role="tabpanel" aria-labelledby="supplierTab">
+          <div class="mt-4 px-2">
+            <div class="row">
+                <label for="qtyOnHand" class="col-sm-2 col-form-label">Qty On Hand</label>
+                <div class="col-sm-10">
+                  <input class="form-control" disabled [(ngModel)]="product.qtyOnHand" name="qtyOnHand">
+                </div>
+            </div>
+            <div class="row">
+              <label for="dateStockTake" class="col-sm-2 col-form-label">Stock Take Date</label>
+              <div class="col-sm-10">
+                <input class="form-control" disabled [(ngModel)]="dateStockTake" name="dateStockTake">
+              </div>  
+            </div>
+            <div class="row">
+                <label for="actualQty" class="col-sm-2 col-form-label">Actual</label>
+                <div class="col-sm-10">
+                  <div class="input-group">
+                    <input type="text" class="form-control" [(ngModel)]="quantityActual" name="actualQty" placeholder="Enter Actual Inventory Quantity here">
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-success" (click)="recordStockTake()">Record Actual Quantity</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="row">
+              <label for="save" class="col-sm-2 col-form-label"></label>
+              <div class="col-sm-10">
+                  <div class="input-group mb-3">
+                    <!-- <button type="button" class="btn btn-success" (click)="saveStockTake()">Add Actual Quantity</button> -->
+                  </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container" *ngIf="product.stockTakes.length > 0">
+                    <table class="table table-striped table-hover">
+                      <thead>
+                        <tr class="table-primary">
+                          <th>Date</th>
+                          <th class="numberfield">Qty On Hand</th>
+                          <th class="numberfield">Actual</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let productStockTake of product.stockTakes">
+                          <td>{{ productStockTake.transDate }}</td>
+                          <td class="numberfield">{{ productStockTake.qtyOnHand }}</td>
+                          <td class="numberfield">{{ productStockTake.actualQty }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,63 @@
+<div id="sidebar-wrapper">
+    <ul class="sidebar-nav">
+        <li><a routerLink="/">Dashboard</a></li>
+        <li><a>Settings</a>
+            <ul>
+                <li>
+                    <a routerLink="/user" routerLinkActive="active">Users</a>
+                </li>
+            </ul>
+        </li>
+        <li><a>Inventory</a>
+            <ul>
+                <li>
+                    <a routerLink="/product" routerLinkActive="active">Products</a>
+                </li>
+                <li>
+                    <a routerLink="/productinquiry">Product Inquiry</a>
+                </li>
+                <li>
+                    <a routerLink="/productstocktake">Stock Take</a>
+                </li>
+            </ul>
+        </li>
+        <li><a>Purchases</a></li>
+        <li><a>Sales</a></li>
+        <li><a>Report</a>
+            <!-- <ul>
+                <li><a>Summary Reports</a></li>
+            </ul> -->
+        </li>
+        <li><a class="link" (click)="logout()">Logout</a></li>
+    </ul>
+</div>
+<!-- <nav id="sidebarMenu" class="col-sm-12 col-md-2 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="position-sticky pt-3 sidebar-sticky">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" 
+                data-bs-toggle="collapse"
+                data-bs-target="#menu_item1"   
+                aria-expanded="false"
+                aria-controls="menu_item1">Inventory</a>
+                <ul id="menu_item1" class="collapse">
+                    <li>
+                        <a class="nav-link" routerLink="/product" routerLinkActive="active">Products</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" routerLink="/productinquery" routerLinkActive="active">Product Inquiry</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link">Purchase</a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            Powered by
+        </div>
+    </div>
+</nav> -->

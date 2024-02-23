@@ -1,0 +1,183 @@
+<div class="main-header">
+    <h5> <a routerLink="/product">Products</a> 
+      <i class="bi bi-chevron-right"></i>Details
+    </h5>
+  </div>
+  
+  <div class="card">
+    <div class="card-body">
+      <app-action-menu [toggleSave]="toggleSave" (onSave)="onSave()"></app-action-menu>
+      <form>
+        <div class="form-group row">
+          <label for="partNo" class="col-sm-2 col-form-label">Part No</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="partNo" disabled [(ngModel)]="product.partNo" name="partNo">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="cDescription" class="col-sm-2 col-form-label">C Description</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="cDescription" disabled [(ngModel)]="product.cDescription" name="cDescription">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="brand" class="col-sm-2 col-form-label">Brand</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="brand" disabled [(ngModel)]="product.brand" name="brand">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="cCode" class="col-sm-2 col-form-label">C Code</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="cCode" disabled [(ngModel)]="product.cCode" name="cCode">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="application" class="col-sm-2 col-form-label">Application</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="application" disabled [(ngModel)]="product.application" name="application">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="mainGroup" class="col-sm-2 col-form-label">Main Group</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="mainGroup" disabled [(ngModel)]="product.mainGroup" name="mainGroup">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="aRef" class="col-sm-2 col-form-label">A Ref</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="aRef" disabled [(ngModel)]="product.aRef" name="aRef">
+          </div>
+        </div>
+      </form>
+      <!-- NAV TABS-->
+      <div class="tabs">
+        <ul class="nav nav-tabs" id="productsTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="moreInfoTab" data-bs-target="#moreInfoTabContent" data-bs-toggle="tab">
+              More Info
+            </a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="supplierTab" data-bs-target="#supplierTabContent" data-bs-toggle="tab">
+              Supplier
+            </a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="warehouseTab" data-bs-target="#warehouseTabContent" data-bs-toggle="tab">
+              Warehouse
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="logsTab" data-bs-target="#logsTabContent" data-bs-toggle="tab">
+              Logs
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!--NAV CONTENTS-->
+      <div class="tab-content" id="productTabContent">
+        <div class="tab-pane fade active show" id="moreInfoTabContent" role="tabpanel" aria-labelledby="logsTab">
+          <div class="row mt-4 px-2">
+            <qrcode [qrdata]="myQrCode" [allowEmptyString]="true" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+          </div>
+        </div>
+        <div class="tab-pane fade show mt-10" id="supplierTabContent" role="tabpanel" aria-labelledby="supplierTab">
+          <div class="row mt-4 px-2">
+            <div class="form-group row">
+              <label for="partNo" class="col-sm-2 col-form-label">Enter Barcode</label>
+              <div class="col-sm-10">
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" [(ngModel)]="vendorBarcode" name="supplierCode" placeholder="Enter new supplier barcode here">
+                  <div class="input-group-append">
+                    <button type="button" class="btn btn-success" (click)="addSupplierBarcode()">Add Supplier Barcode</button>
+                  </div>
+                  <!-- <div class="input-group-append">
+                      <button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Scan</button>
+                  </div> -->
+                </div>
+              </div>
+              <div class="container" *ngIf="product.barcodes.length > 0">
+                <table class="table table-striped table-hover">
+                  <thead>
+                    <tr class="table-primary">
+                      <th>Supplier Barcode(s)</th>
+                      <th>Active</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let productBarcode of product.barcodes">
+                      <td>{{ productBarcode.barcode }}</td>
+                      <td><input class="form-check-input" type="checkbox" value="" id="isActive" [(ngModel)]="productBarcode.isActive" (change)="onModelChanged()"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade show mt-10" id="warehouseTabContent" role="tabpanel" aria-labelledby="warehouseTab">
+          <div class="row mt-4 px-2">
+            <div class="form-group row">
+              <label for="warehouseNo" class="col-sm-2 col-form-label">Warehouse No</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="warehouseNo" [(ngModel)]="product.warehouseNo" name="warehouseNo" (ngModelChange)="onModelChanged()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="floorNo" class="col-sm-2 col-form-label">Floor No</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="floorNo" [(ngModel)]="product.floorNo" name="floorNo" (ngModelChange)="onModelChanged()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="shelfNo" class="col-sm-2 col-form-label">Shelf No</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="shelfNo" [(ngModel)]="product.shelfNo" name="shelfNo" (ngModelChange)="onModelChanged()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="rowNo" class="col-sm-2 col-form-label">Row No</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="rowNo" [(ngModel)]="product.rowNo" name="rowNo" (ngModelChange)="onModelChanged()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="columnNo" class="col-sm-2 col-form-label">Column No</label>
+              <div class="col-sm-10">
+                <input type="string" class="form-control" id="columnNo" [(ngModel)]="product.columnNo" name="columnNo" (ngModelChange)="onModelChanged()">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade show" id="logsTabContent" role="tabpanel" aria-labelledby="logsTab">
+          <div class="row mt-4 px-2">
+            <ul class="list-group list-group-flush" *ngFor="let log of product.logs">
+              <li class="list-group-item">{{ log.actionDescription  }} by {{ log.user }} on {{ log.transDate | date: 'MMM dd, yyyy hh:mm:ss' }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Scanner</h5>
+          <button id="modalClose" type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <!-- <zxing-scanner [formats]="allowedFormats" (scanSuccess)="onCodeResult($event)"></zxing-scanner> -->
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,13 @@
+<!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" /> -->
+<body>
+  <app-login *ngIf="!loginStatus" (verifyCred)="onVerifyCred($event)"></app-login>
+  
+  <div id="wrapper" [ngClass]="{'toggled': menuToggled }">
+      <div class="wrappercell">
+          <app-nav-sidemenu *ngIf="loginStatus" (toggleLogout)="onLogoutToggled()"></app-nav-sidemenu>
+      </div>
+      <div class="wrappercell">
+          <app-main *ngIf="loginStatus" (toggleMainMenuToggled)="onMenuToggled()"></app-main>
+      </div>
+  </div>
+</body>

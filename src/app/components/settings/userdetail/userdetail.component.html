@@ -1,0 +1,37 @@
+<div class="main-header">
+    <h5> <a routerLink="/user">Users</a> 
+        <i class="bi bi-chevron-right"></i>Details
+    </h5>
+</div>
+
+<div class="card">
+    <div class="card-body">
+      <app-action-menu [toggleSave]="toggleSave" (onSave)="onSave()"></app-action-menu>
+      <form>
+        <div class="form-group row">
+          <label for="code" class="col-sm-2 col-form-label">User Id</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="code" disabled [(ngModel)]="user.code" name="code">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="name" class="col-sm-2 col-form-label">Name</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="name" disabled [(ngModel)]="user.name" name="name">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="password" class="col-sm-2 col-form-label">Password</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="password" [(ngModel)]="user.password" name="password">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="confirmpassword" class="col-sm-2 col-form-label">Confirm Password</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="confirmpassword" [(ngModel)]="user.confirmpassword" name="confirmpassword" (keyup)="validate()">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>

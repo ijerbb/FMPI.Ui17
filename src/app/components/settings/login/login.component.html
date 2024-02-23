@@ -1,0 +1,7 @@
+<form class="form-signin">
+    <h1 class="h3 mb-3 font-weight-normal">Please Sign In</h1>
+    <input type="text" id="inputEmail" class="form-control" placeholder="User ID" required autofocus [(ngModel)]="user.code" name="userid" (keypress)="onKeyPressEvent($event)">
+    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required [(ngModel)]="user.password" name="userpassword" (keypress)="onKeyPressEvent($event)">
+    <button class="btn btn-lg btn-primary btn-block" type="button" (click)="verify()">Sign In</button>
+    {{ errorMsg }}
+</form>

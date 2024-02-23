@@ -1,0 +1,38 @@
+<!-- <app-nav-menu *ngIf="loginStatus" (toggleMenu)="onMenuToggled()" (toggleLogout)="onLogoutToggled()"></app-nav-menu> -->
+<app-nav-menu (toggleMenu)="onMainMenuToggle()"></app-nav-menu>
+
+<div id="page-content-wrapper" [ngClass]="{'toggled': mainMenuToggled }">
+    <router-outlet></router-outlet>
+</div>
+
+<div class="alert alert-success alert-dismissible fade show myAlert" role="alert" *ngIf="successAlert">
+    <strong>Success!</strong> Record was successfully saved.
+    <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">x</span>
+    </button> -->
+</div>
+
+<div class="alert alert-danger alert-dismissible fade show myAlert" role="alert" *ngIf="errorAlert">
+    <strong>Error!</strong> Record was not saved.
+    <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">x</span>
+    </button> -->
+</div>
+
+<div class="alert alert-danger alert-dismissible fade show myAlert" role="alert" *ngIf="customErrorAlert">
+    <strong>Error!</strong> {{ customErrorAlert }}.
+    <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">x</span>
+    </button> -->
+</div>
+
+
+<!-- <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="row">
+            <h1 class="h2">Isaiah2.0</h1>
+        </div>
+    </div>
+    <router-outlet></router-outlet>
+    <app-nav-footer></app-nav-footer>
+</main> -->
