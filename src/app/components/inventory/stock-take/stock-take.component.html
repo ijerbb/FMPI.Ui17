@@ -1,0 +1,63 @@
+<div class="stock-take-root">
+  <h3>Inventory Stock Take Sessions</h3>
+  <div *ngIf="loading">Loading...</div>
+
+  <div class="list">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Warehouse</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Freeze</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of sessions">
+          <td>{{s.name}}</td>
+          <td>{{s.warehouseID}}</td>
+          <td>{{s.type}}</td>
+          <td>{{s.status}}</td>
+          <td>{{s.freezeTransactions ? 'Yes' : 'No'}}</td>
+          <td>{{s.createdDate}}</td>
+          <td><button (click)="selectSession(s)">Edit</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="editor">
+    <h4>{{current && current.id ? 'Edit Session' : 'New Session'}}</h4>
+    <div class="form-row">
+      <label>Name</label>
+      <input [(ngModel)]="current.name" />
+    </div>
+    <div class="form-row">
+      <label>Warehouse ID</label>
+      <input type="number" [(ngModel)]="current.warehouseID" />
+    </div>
+    <div class="form-row">
+      <label>Type</label>
+      <input [(ngModel)]="current.type" />
+    </div>
+    <div class="form-row">
+      <label>Status</label>
+      <input [(ngModel)]="current.status" />
+    </div>
+    <div class="form-row">
+      <label>Freeze Transactions</label>
+      <input type="checkbox" [(ngModel)]="current.freezeTransactions" />
+    </div>
+    <div class="form-row">
+      <label>Notes</label>
+      <textarea [(ngModel)]="current.notes"></textarea>
+    </div>
+    <div class="actions">
+      <button (click)="saveSession()">Save</button>
+      <button (click)="newSession()">New</button>
+    </div>
+  </div>
+</div>

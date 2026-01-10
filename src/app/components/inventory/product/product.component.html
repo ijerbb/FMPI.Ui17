@@ -1,5 +1,5 @@
 <div class="main-header">
-    <h5>Products</h5>
+    <h5>{{headerText}}</h5>
 </div>
 <div class="form-group row">
     <div class="col-sm-12 search-header">
@@ -9,7 +9,7 @@
             <label><b>Search Criteria</b></label>
           </div>
           <div class="input-group mb-3">
-            <input type="search" class="form-control" [(ngModel)]="barcodeStr" name="barcode" placeholder="Barcode" aria-label="Barcode" aria-describedby="basic-addon2" (keyup.enter)="searchBarcode()">
+            <input type="search" class="form-control" [(ngModel)]="productSearch.barcode" name="barcode" placeholder="Barcode" aria-label="Barcode" aria-describedby="basic-addon2" (keyup.enter)="searchBarcode()" (ngModelChange)="keyDown()">
             <div class="input-group-append">
               <div class="input-group-append">
                 <!-- <button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Scan</button> -->
@@ -29,25 +29,25 @@
               <div class="card">
                 <div class="card-header">
                   <div class="row searchfield">
-                    <input type="search" class="form-control" [(ngModel)]="partNo" name="partNo" placeholder="Part No" aria-label="Part No" aria-describedby="basic-addon2">
+                    <input type="search" class="form-control" [(ngModel)]="productSearch.partNo" name="partNo" placeholder="Part No" aria-label="Part No" aria-describedby="basic-addon2">
                   </div>
                   <div class="row searchfield">
-                    <input type="search" class="form-control" [(ngModel)]="cDescription" name="cDescription" placeholder="C Description" aria-label="C Description" aria-describedby="basic-addon2">
+                    <input type="search" class="form-control" [(ngModel)]="productSearch.cDescription" name="cDescription" placeholder="C Description" aria-label="C Description" aria-describedby="basic-addon2">
                   </div>
                   <div class="row searchfield">
-                    <input type="search" class="form-control" [(ngModel)]="brand" name="brand" placeholder="Brand" aria-label="Brand" aria-describedby="basic-addon2">
+                    <input type="search" class="form-control" [(ngModel)]="productSearch.brand" name="brand" placeholder="Brand" aria-label="Brand" aria-describedby="basic-addon2">
                   </div>
                   <div class="row searchfield">
-                    <input type="search" class="form-control" [(ngModel)]="cCode" name="cCode" placeholder="C Code" aria-label="C Code" aria-describedby="basic-addon2">
+                    <input type="search" class="form-control" [(ngModel)]="productSearch.cCode" name="cCode" placeholder="C Code" aria-label="C Code" aria-describedby="basic-addon2">
                   </div>
                   <div class="row searchfield">
-                    <input type="search" class="form-control" [(ngModel)]="application" name="application" placeholder="Application" aria-label="Application" aria-describedby="basic-addon2">
+                    <input type="search" class="form-control" [(ngModel)]="productSearch.application" name="application" placeholder="Application" aria-label="Application" aria-describedby="basic-addon2">
                   </div>
                   <div class="row searchfield">
-                    <input type="search" class="form-control" [(ngModel)]="mainGroup" name="mainGroup" placeholder="Main Group" aria-label="mainGroup" aria-describedby="basic-addon2">
+                    <input type="search" class="form-control" [(ngModel)]="productSearch.mainGroup" name="mainGroup" placeholder="Main Group" aria-label="mainGroup" aria-describedby="basic-addon2">
                   </div>
                   <div class="row searchfield">
-                    <input type="search" class="form-control" [(ngModel)]="aRef" name="aRef" placeholder="A Ref" aria-label="A Ref" aria-describedby="basic-addon2">
+                    <input type="search" class="form-control" [(ngModel)]="productSearch.aRef" name="aRef" placeholder="A Ref" aria-label="A Ref" aria-describedby="basic-addon2">
                   </div>
                   <div class="row col-md-4 searchfield pull-right">
                     <button class="btn btn-secondary" type="button" (click)="advanceSearch()">Search</button>
@@ -77,8 +77,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let product of products">
-                    <td><a routerLink="/productdetails/{{product.id}}"><i class="bi bi-pencil"></i></a></td>
+                <tr *ngFor="let product of resProd.lists">
+                    <td>
+                      <a routerLink="/productdetails/{{product.id}}" *ngIf="_mod=='PD'"><i class="bi bi-pencil"></i></a>
+                      <a routerLink="/productinquiry/{{product.id}}" *ngIf="_mod=='PI'"><i class="bi bi-zoom-in"></i></a>
+                    </td>
                     <td>{{ product.partNo }}</td>
                     <td>{{ product.cDescription }} </td>
                     <td>{{ product.brand }}</td>
@@ -90,23 +93,23 @@
             </tbody>
         </table>
     </div>
-    <div class="d-flex" *ngIf="products.length > 0">
+    <div class="d-flex" *ngIf="resProd.lists.length > 0">
       <ul class="pagination">
         <li class="page-item">
-          <a class="page-link" tabindex="-1" (click)="clickPage(pageNum-1)">Previous</a>
+          <a class="page-link" tabindex="-1" (click)="clickPage(resProd.pageNum-1)">Previous</a>
         </li> 
-        <ng-container *ngFor="let pageNo of pageNoList">
-          <li class="page-item" [ngClass]="{'active' : pageNum === pageNo }"><a class="page-link" (click)="clickPage(pageNo)">{{ pageNo }}</a></li>
+        <ng-container *ngFor="let pageNo of resProd.pageNoList">
+          <li class="page-item" [ngClass]="{'active' : resProd.pageNum === pageNo }"><a class="page-link" (click)="clickPage(pageNo)">{{ pageNo }}</a></li>
         </ng-container>
         <li class="page-item">
-          <a class="page-link" (click)="clickPage(pageNum+1)">Next</a>
+          <a class="page-link" (click)="clickPage(resProd.pageNum+1)">Next</a>
         </li>
       </ul>
       <div class="ms-auto">
-        <label>{{ 1 + ((pageNum - 1) * 10) }} - {{ totalRecords > (pageNum * 10) ? (pageNum * 10) : totalRecords }} of {{ totalRecords }}</label>
+        <label>{{ 1 + ((resProd.pageNum - 1) * 10) }} - {{ resProd.totalRecords > (resProd.pageNum * 10) ? (resProd.pageNum * 10) : resProd.totalRecords }} of {{ resProd.totalRecords }}</label>
       </div>
     </div>
-    <div *ngIf="products.length == 0">
+    <div *ngIf="resProd.lists.length == 0">
       <div class="ms-auto" style="text-align: center;">
         <label>No records found</label>
       </div>

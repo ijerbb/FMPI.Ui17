@@ -2,4 +2,6 @@
     <button class="btn btn-outline-success me-2" type="button" 
         [disabled]="!saveStatus"
     (click)="onSavedClicked()"><i class="bi bi-sd-card"></i> Save</button>
+    <button class="btn btn-outline-primary me-2" type="button" [disabled]="!printStatus"
+    (click)="onPrintClicked()"><i class="bi bi-printer"></i> Print</button>
 </div>

@@ -1,0 +1,8 @@
+.stock-take-root { padding: 12px; }
+.stock-take-root .list { margin-bottom: 16px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+.editor { margin-top: 12px; max-width: 600px; }
+.form-row { margin-bottom: 8px; display:flex; gap:8px; align-items:center; }
+.form-row label { width: 140px; font-weight:600; }
+.actions { margin-top: 8px; display:flex; gap:8px; }

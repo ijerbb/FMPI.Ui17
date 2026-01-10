@@ -1,5 +1,5 @@
 export class ProductPricesDto{
-    id?: number;
+    id: number = 0;
     code = "";
     description = "";
     partNo = "";
@@ -15,4 +15,5 @@ export class ProductPricesDto{
     previousCost = 0;
     price = 0;
     previousPrice = 0;
+    effectiveDate: Date = new Date();
 }

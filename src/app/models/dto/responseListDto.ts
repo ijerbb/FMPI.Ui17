@@ -7,4 +7,5 @@ export class ResponseListDto<T> {
     pageNum = 1;
     totalRecords = 0;
     lists:T[] = [];
+    pageNoList: number[] = [];
 }

@@ -5,6 +5,7 @@ import { HttpService } from '../../../services/http.service';
 import { Product } from '../../../models/product';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { ProductSearchDto } from '../../../models/dto/productSearchDto';
 
 @Component({
   selector: 'app-product-stock-take',
@@ -14,6 +15,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['../../settings/main/main.component.css', './product-stock-take.component.css']
 })
 export class ProductStockTakeComponent implements OnInit {
+  productSearch: any;
   products : ProductDto[] = [];
   resultString: string = "";
   resultProductDescription: string = "";
@@ -29,7 +31,9 @@ export class ProductStockTakeComponent implements OnInit {
 
   datePipe = new DatePipe('en-US'); 
 
-  constructor(private httpService: HttpService) { }
+  constructor(private httpService: HttpService) {
+    this.productSearch = new ProductSearchDto();
+   }
 
   ngOnInit(): void {
     this.loadList(1);
@@ -60,7 +64,9 @@ export class ProductStockTakeComponent implements OnInit {
   }
 
   searchBarcode() {
-    if(this.barcodeStr != "") {
+    var tempBarcode = this.barcodeStr.replace(/\s/g, "").trim();
+    this.barcodeStr = tempBarcode;
+    if(this.barcodeStr.length != 0) {
       this.getProduct(this.barcodeStr);
     } else {
       this.loadList(1);
@@ -78,7 +84,8 @@ export class ProductStockTakeComponent implements OnInit {
   }
 
   private getProduct(id:string){
-    this.httpService.getProduct(id).subscribe(result => {
+    this.productSearch.barcode = id;
+    this.httpService.getProduct(this.productSearch).subscribe(result => {
       if(result.totalRecords > 0 && result.lists != null) {
         this.pageStart = result.pageStart;
         this.pageEnd = result.pageEnd;

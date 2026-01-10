@@ -7,6 +7,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AlertService } from '../../../services/alert.service';
 import { FormsModule } from '@angular/forms';
 import { ActionMenuComponent } from "../../settings/action-menu/action-menu.component";
+import { ProductSearchDto } from '../../../models/dto/productSearchDto';
 
 @Component({
     selector: 'app-product-stock-take-detail',
@@ -24,12 +25,16 @@ export class ProductStockTakeDetailComponent implements OnInit {
 
   toggleSave = new EventEmitter<boolean>(); 
   
-  constructor(private httpService: HttpService, private route: ActivatedRoute, private alertService:AlertService) { }
+  constructor(private httpService: HttpService, private route: ActivatedRoute, private alertService:AlertService) { 
+    
+  }
 
   ngOnInit(): void {
+    var productSearch = new ProductSearchDto();
     this.dateStockTake = this.datePipe.transform(new Date(), 'MM/dd/yyyy');
-    const id = this.route.snapshot.paramMap.get('id')?.toString();
-    this.httpService.getProduct(this.route.snapshot.paramMap.get('id')??"").subscribe(result => {
+    var id = this.route.snapshot.paramMap.get('id')?.toString() ?? '';
+    productSearch.barcode = id;
+    this.httpService.getProduct(productSearch).subscribe(result => {
       if(result!=null && result.lists.length > 0) {
         this.product = result.lists[0];
         this.product.stockTakes.forEach(element => {
@@ -52,7 +57,6 @@ export class ProductStockTakeDetailComponent implements OnInit {
     this.product.stockTakes.forEach(element => {
       if(new Date(element.transDate??new Date()).getMonth()==new Date(this.dateStockTake).getMonth()) {
         stockTakeExist = true;
-        console.log(new Date(this.dateStockTake).getMonth());
       }
     });
 

@@ -3,16 +3,28 @@ import { productInquiryDto } from '../../../models/dto/productInquiryDto';
 import { HttpService } from '../../../services/http.service';
 import { CommonModule, formatNumber } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ProductSearchDto } from '../../../models/dto/productSearchDto';
+import { ProductPricesDto } from '../../../models/dto/productPricesDto';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ResponseListDto } from '../../../models/dto/responseListDto';
 
 @Component({
   selector: 'app-product-inquiry',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './product-inquiry.component.html',
   styleUrls: ['../../settings/main/main.component.css', './product-inquiry.component.css']
 })
 export class ProductInquiryComponent implements OnInit{
   barcodeStr:string = "";
+  partNoS: string = "";
+  cDescS: string = "";
+  brandS: string = "";
+  cCodeS: string = "";
+  applicationS: string = "";
+  mainGroupS: string = "";
+  aRefS: string = "";
+  
   partNo: string = "";
   cDesc: string = "";
   brand: string = "";
@@ -22,8 +34,18 @@ export class ProductInquiryComponent implements OnInit{
   aRef: string = "";
   costCode: string = "";
   price : string = "";
+  effectiveDate: string = "";
   qtyOnHand:number = 0;
   isScanSuccess: boolean = false;
+  isSearchSuccess: boolean = false;
+  isMultipleItem: boolean = false;
+  isItemSelected: boolean = false;
+
+  listPageStart = 1;
+  listPageEnd = 2;
+  listPageNum = 1;
+  listTotalRecords = 0;
+  listPageNoList: number[] = [];
 
   pageStart = 1;
   pageEnd = 2;
@@ -31,19 +53,20 @@ export class ProductInquiryComponent implements OnInit{
   totalRecords = 0;
   pageNoList: number[] = [];
   productInquiries : productInquiryDto[] = [];
+  productPricesList: ProductPricesDto[] = [];
   // allowedFormats = [ BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128, BarcodeFormat.EAN_13];  
   
-  constructor(private httpService: HttpService) { }
+  constructor(private httpService: HttpService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id')?.toString();
+    this.onCodeResult(this.route.snapshot.paramMap.get('id')??"");
   }
 
   onCodeResult(result: string){
     this.barcodeStr = result;
 
     this.getHistory(1);
-    
-    document.getElementById("modalClose")?.click();
   }
 
   getHistory(pageNo: number){
@@ -56,7 +79,9 @@ export class ProductInquiryComponent implements OnInit{
     if(this.barcodeStr != "") {
       this.httpService.getProductInquiry(this.barcodeStr, pageNo).subscribe(result=>{
         this.qtyOnHand = 0;
-        this.isScanSuccess = result.totalRecords > 0;
+        this.isItemSelected = true;
+        this.isSearchSuccess = true;
+        this.isScanSuccess = result.header != null
         this.pageStart = result.pageStart;
         this.pageEnd = result.pageEnd;
         this.pageNum = result.pageNum;
@@ -72,6 +97,14 @@ export class ProductInquiryComponent implements OnInit{
         this.aRef = result.header.aRef;
         this.costCode = result.header.costCode;
         this.price = formatNumber(result.header.price,"en-IN", "1.2-2");
+        const date = new Date(result.header.effectiveDate);
+        const formattedDate: string = new Intl.DateTimeFormat(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).format(date);
+
+        this.effectiveDate = formattedDate;
         result.details.forEach(value=>{
           let prodInq: productInquiryDto = new productInquiryDto();
           prodInq.moduleType = value.moduleType;
@@ -88,21 +121,9 @@ export class ProductInquiryComponent implements OnInit{
     }
   }
 
-  searchBarcode() {
-    this.onCodeResult(this.barcodeStr);
-  }
-
   clickPage(pageNo:number){
-    
     if(this.pageEnd >= pageNo && (pageNo>=this.pageStart)) {
-      console.log(pageNo);
       this.getHistory(pageNo);
     }
-      
-  }
-
-  clearBarcodeStr(){
-    this.barcodeStr = '';
-    this.getHistory(1);
-  }
+  }  
 }

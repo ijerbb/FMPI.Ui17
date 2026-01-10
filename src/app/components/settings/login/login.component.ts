@@ -40,6 +40,6 @@ export class LoginComponent {
   }
 
   onKeyPressEvent(event: KeyboardEvent){
-    // this.verify();
+     this.verify();
   }
 }

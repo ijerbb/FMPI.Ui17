@@ -3,9 +3,11 @@ import { HttpService } from '../../../services/http.service';
 import { Product } from '../../../models/product';
 import { ProductDto } from '../../../models/dto/productDto';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductSearchDto } from '../../../models/dto/productSearchDto';
+import { StateService } from '../../../services/state.service';
+import { ResponseListDto } from '../../../models/dto/responseListDto';
 
 @Component({
   selector: 'app-product',
@@ -15,58 +17,66 @@ import { ProductSearchDto } from '../../../models/dto/productSearchDto';
   styleUrls: ['../../settings/main/main.component.css','./product.component.css']
 })
 export class ProductComponent implements OnInit{
-  products : ProductDto[] = [];
   resultString: string = "";
   resultProductDescription: string = "";
+  productsList: any = null;
   //allowedFormats = [ BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128, BarcodeFormat.EAN_13];
 
   inputText: string = "";
-  barcodeStr:string = "";
-  partNo: string = "";
-  cDescription: string = "";
-  brand: string = "";
-  cCode: string = "";
-  application: string = "";
-  mainGroup: string = "";
-  aRef: string = "";
-  pageStart = 1;
-  pageEnd = 2;
-  pageNum = 1;
-  totalRecords = 0;
-  pageNoList: number[] = [];
+  headerText: string = "";
+  // pageStart = 1;
+  // pageEnd = 2;
+  // pageNum = 1;
+  // totalRecords = 0;
+  //pageNoList: number[] = [];
   isScanSuccess: boolean = false;
+  _state: any;
+  _searchState: any;
+  _mod: any;
 
-  constructor(private httpService: HttpService) { }
+  // products : ProductDto[] = [];
+
+  productSearch: any;
+  resProd: any;
+
+  constructor(private httpService: HttpService, private route: ActivatedRoute, private stateService: StateService) { 
+    this.productSearch = new ProductSearchDto();
+    this.resProd = new ResponseListDto<ProductDto>()
+  }
 
   ngOnInit(): void {
-    this.loadList(1);
+    this.route.params.subscribe(params => {
+      this._mod = params['mod'];
+      if(this._mod == 'PI')
+        this.headerText = 'Product Inquiry';
+      else
+        this.headerText = 'Products';
+    })
+    
+    this._state = this.stateService.state$.getValue() || {};
+    this._searchState = this.stateService.search$.getValue() || {};
+    if(Object.keys(this._state).length == 0)
+      this.loadList(1);
+    else
+      this.resProd = this._state;
+
+    if(Object.keys(this._searchState).length != 0)
+      this.productSearch = this._searchState;
   }
 
   loadList(pageNo: number){
-    this.products = [];
+    this.resProd.lists = [];
     this.httpService.getProducts(pageNo).subscribe(result => {
-      this.pageStart = result.pageStart;
-      this.pageEnd = result.pageEnd;
-      this.pageNum = result.pageNum;
-      this.totalRecords = result.totalRecords;
-      var tempPageStart = this.pageStart;
-      this.pageNoList =  Array((this.pageEnd + 1)- this.pageStart).fill(this.pageStart).map((x, i) => tempPageStart++);
-      this.products = result.lists;
+      this.resProd.pageStart = result.pageStart;
+      this.resProd.pageEnd = result.pageEnd;
+      this.resProd.pageNum = result.pageNum;
+      this.resProd.totalRecords = result.totalRecords;
+      var tempPageStart = this.resProd.pageStart;
+      this.resProd.pageNoList =  Array((this.resProd.pageEnd + 1)- this.resProd.pageStart).fill(this.resProd.pageStart).map((x, i) => tempPageStart++);
+      this.resProd.lists = result.lists;
+      this.stateService.state$.next(this.resProd);
+      this.stateService.search$.next(this.productSearch);
 
-      // result.lists.forEach((value:ProductDto) => {
-      //   let product: Product  = new Product();
-      //   product.id = value. sysPK_Invty;
-      //   product.code = value.userPK_Invty;
-      //   product.description = value.description_Invty;
-      //   product.partno  = value.model_Invty;
-      //   product.cdescription = value.subCategory_Invty;
-      //   product.brand = value.brand_Invty;
-      //   product.ccode = value.speed_Invty;
-      //   product.application = value.style_Invty;
-      //   product.maingroup = value.category_Invty;
-      //   product.aref = value.classification_Invty;
-      //   this.products.push(product);
-      // })
     }, error => console.error(error));
   }
 
@@ -81,11 +91,22 @@ export class ProductComponent implements OnInit{
   }
 
   searchBarcode() {
-    if(this.barcodeStr != "") {
-      this.getProduct(this.barcodeStr);
+    var tempBarcode = this.productSearch.barcode.replace(/\s/g, "").trim();
+    if(tempBarcode.length != 0) {
+      this.getProduct(tempBarcode);
     } else {
       this.loadList(1);
     }
+  }
+
+  keyDown(){
+    if(this.hasWhiteSpace(this.productSearch.barcode.trim())){
+      this.productSearch.barcode = this.productSearch.barcode.replace(/\s/g, "").trim();
+    }
+  }
+
+  hasWhiteSpace(str: string) {
+    return /\s/g.test(str);
   }
 
   onCodeResult(result: string){ 
@@ -99,47 +120,43 @@ export class ProductComponent implements OnInit{
   }
 
   private getProduct(id:string){
-    this.httpService.getProduct(id).subscribe(result => {
+    this.productSearch.barcode = id;
+    this.httpService.getProduct(this.productSearch).subscribe(result => {
       if(result.totalRecords > 0 && result.lists != null) {
-        this.pageStart = result.pageStart;
-        this.pageEnd = result.pageEnd;
-        this.pageNum = result.pageNum;
-        this.totalRecords = result.totalRecords;
+        this.resProd.pageStart = result.pageStart;
+        this.resProd.pageEnd = result.pageEnd;
+        this.resProd.pageNum = result.pageNum;
+        this.resProd.totalRecords = result.totalRecords;
         let product: Product  = new Product();
-        var tempPageStart = this.pageStart;
-        this.pageNoList =  Array((this.pageEnd + 1)- this.pageStart).fill(this.pageStart).map((x, i) => tempPageStart++);
-        this.products = [];
-        this.products.push(result.lists[0]);
+        var tempPageStart = this.resProd.pageStart;
+        this.resProd.pageNoList =  Array((this.resProd.pageEnd + 1)- this.resProd.pageStart).fill(this.resProd.pageStart).map((x, i) => tempPageStart++);
+        this.resProd.lists = [];
+        this.resProd.lists.push(result.lists[0]);
+        this.stateService.state$.next(this.resProd);
+        this.stateService.search$.next(this.productSearch);
       } else {
-        this.products = [];
+        this.resProd.lists = [];
       }
     });
   }
 
   private getProductAdvSearch()
   {
-    let productSearchDto: ProductSearchDto = {
-      partNo : this.partNo,
-      cDescription: this.cDescription,
-      brand: this.brand,
-      cCode: this.cCode,
-      application: this.application,
-      mainGroup: this.mainGroup,
-      aRef: this.aRef
-    }
-    this.httpService.getProductAdvanceSearch(productSearchDto).subscribe(result => {
-      this.pageStart = result.pageStart;
-      this.pageEnd = result.pageEnd;
-      this.pageNum = result.pageNum;
-      this.totalRecords = result.totalRecords;
-      var tempPageStart = this.pageStart;
-      this.pageNoList =  Array((this.pageEnd + 1)- this.pageStart).fill(this.pageStart).map((x, i) => tempPageStart++);
-      this.products = result.lists;
+    this.httpService.getProductAdvanceSearch(this.productSearch).subscribe(result => {
+      this.resProd.pageStart = result.pageStart;
+      this.resProd.pageEnd = result.pageEnd;
+      this.resProd.pageNum = result.pageNum;
+      this.resProd.totalRecords = result.totalRecords;
+      var tempPageStart = this.resProd.pageStart;
+      this.resProd.pageNoList =  Array((this.resProd.pageEnd + 1)- this.resProd.pageStart).fill(this.resProd.pageStart).map((x, i) => tempPageStart++);
+      this.resProd.lists = result.lists;
+      this.stateService.state$.next(this.resProd);
+      this.stateService.search$.next(this.productSearch);
     }, error => console.error(error));
   }
 
   clearBarcodeStr(){
-    this.barcodeStr = '';
+    this.productSearch.barcode = '';
     this.loadList(1);
   }
 

@@ -9,9 +9,13 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class ActionMenuComponent implements OnInit{
   saveStatus: boolean = false; 
+  printStatus: boolean = false;
 
   @Output() onSave = new EventEmitter();
+  @Output() onPrint = new EventEmitter();
+
   @Input() toggleSave = new EventEmitter<boolean>; 
+  @Input() togglePrint = new EventEmitter<boolean>;
   
   ngOnInit(): void { 
     this.subscribeToParentEmitter(); 
@@ -25,9 +29,16 @@ export class ActionMenuComponent implements OnInit{
     this.onSave.emit();
   }
 
+  onPrintClicked(){
+    this.onPrint.emit();
+  }
+
   subscribeToParentEmitter(): void { 
       this.toggleSave.subscribe((data: boolean) => { 
           this.saveStatus = data; 
       }); 
+      this.togglePrint.subscribe((data: boolean) => {
+        this.printStatus = data;
+      })
   } 
 }

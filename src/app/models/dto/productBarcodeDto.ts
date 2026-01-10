@@ -3,4 +3,5 @@ export class ProductBarcodeDto {
     sysFK_Invty?: number;
     barcode = "";
     isActive:boolean = false;
+    isInExclusionList: boolean = false;
 }

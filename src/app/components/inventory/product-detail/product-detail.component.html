@@ -1,12 +1,12 @@
 <div class="main-header">
-    <h5> <a routerLink="/product">Products</a> 
+    <h5> <a routerLink="/product/PD">Products</a> 
       <i class="bi bi-chevron-right"></i>Details
     </h5>
   </div>
   
   <div class="card">
     <div class="card-body">
-      <app-action-menu [toggleSave]="toggleSave" (onSave)="onSave()"></app-action-menu>
+      <app-action-menu [toggleSave]="toggleSave" (onSave)="onSave()" [togglePrint]="togglePrint" (onPrint)="onPrint()"></app-action-menu>
       <form>
         <div class="form-group row">
           <label for="partNo" class="col-sm-2 col-form-label">Part No</label>
@@ -50,6 +50,18 @@
             <input type="text" class="form-control" id="aRef" disabled [(ngModel)]="product.aRef" name="aRef">
           </div>
         </div>
+        <div class="form-group row">
+          <label for="costCode" class="col-sm-2 col-form-label">Cost Code</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="costCode" disabled [(ngModel)]="product.costCode" name="costCode">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="price" class="col-sm-2 col-form-label">Price</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control text-end" id="price" disabled [(ngModel)]="price" name="price">
+          </div>
+        </div>
       </form>
       <!-- NAV TABS-->
       <div class="tabs">
@@ -89,7 +101,7 @@
               <label for="partNo" class="col-sm-2 col-form-label">Enter Barcode</label>
               <div class="col-sm-10">
                 <div class="input-group mb-3">
-                  <input type="text" class="form-control" [(ngModel)]="vendorBarcode" name="supplierCode" placeholder="Enter new supplier barcode here">
+                  <input type="search" class="form-control" [(ngModel)]="vendorBarcode" name="supplierCode" placeholder="Enter new supplier barcode here">
                   <div class="input-group-append">
                     <button type="button" class="btn btn-success" (click)="addSupplierBarcode()">Add Supplier Barcode</button>
                   </div>
@@ -160,12 +172,56 @@
         </div>
       </div>
     </div>
+
+    <button id="btnQtyConfirm" class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#qtyConfirm" hidden>Quantity</button>
+    <button id="btnConfirm" class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" hidden>Confirm</button>
   </div>
   
   
   <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
+          <button id="modalClose" type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+              <p>{{errorMessage}}</p><br/>
+              <div [innerHtml]="exclusionListSafeHtml"></div>
+              <div *ngIf="barcodeToExclusionList">
+                <p>Do you want to add it to the exclusion list?</p>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <div *ngIf="!_isAuthorizedUser">
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="container">
+                <div class="input-group">
+                    <div class="mt-2 me-4">
+                      <label for="password" class="form-label">User not authorized</label>
+                    </div>
+                    <input type="password" class="form-control" id="password" [(ngModel)]="_authorizedUserPassword" placeholder="Enter password">
+                    <button class="btn btn-primary" (click)="exclusionAccessOverride()" type="submit">Override</button>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="barcodeToExclusionList && _isAuthorizedUser">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">No</button>
+            <a class="btn btn-success" (click)="addBarcodeToExclusionList()">Yes</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="document" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Scanner</h5>
@@ -181,3 +237,41 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="qtyConfirm" tabindex="-1" role="dialog" aria-labelledby="qtyModal" aria-hidden="true">
+    <div class="modal-dialog  bd-example-modal-lg ">
+        <div class="modal-content">
+        
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Print Quantity</h5>
+              <button id="modalClose" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        
+            <div class="modal-body">
+              
+              <div class="row mt-4 px-2">
+                <input type="number" class="form-control text-end" id="printQuantity" [(ngModel)]="printQuantity" name="printQuantity">
+              </div>
+              
+              <div class="row mt-1 px-2">
+                <select class="form-select" [(ngModel)]="qrSelectedSize" aria-label="Default select example">
+                  <option [value]="qrSize.id" *ngFor="let qrSize of qrSizes">{{qrSize.name}}</option>
+                </select>
+
+              </div>
+
+              <div class="row mt-1 px-2">
+
+                <a class="btn btn-success btn-ok" (click)="printQR()">Preview</a>
+              </div>
+
+              <iframe [src]="qrPDF" width="100%" height="300" frameborder="0" allowfullscreen></iframe>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
+                <a class="btn btn-success" target="_blank" [routerLink]="['/printpage']">Print</a>
+            </div>
+        </div>
+    </div>
+</div>

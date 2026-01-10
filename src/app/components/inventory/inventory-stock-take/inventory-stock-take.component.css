@@ -1,0 +1,4 @@
+.inventory-stock-take-root { padding: 12px; }
+.inventory-stock-take-root .actions { margin-bottom: 12px; }
+table { width:100%; border-collapse: collapse; }
+th, td { border: 1px solid #ddd; padding: 6px 8px; }

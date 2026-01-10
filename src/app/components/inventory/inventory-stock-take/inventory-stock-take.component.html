@@ -1,0 +1,123 @@
+<div class="main-header">
+    <h5>{{headerText}}</h5>
+</div>
+<div class="actions mb-3">
+  <button class="btn btn-outline-primary me-2" type="button" 
+      (click)="addNew()">New Session</button>
+</div>
+<div class="form-group row">
+    <div class="col-lg-12">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr class="table-primary">
+                    <th>&nbsp;</th>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of sessions.lists">
+                <td>
+                  <a routerLink="/inventorystocktakedetails/{{s.id}}"><i class="bi bi-pencil"></i></a>
+                </td>
+                <td>{{s.createdDate}}</td>
+                <td>{{s.name}}</td>
+                <td>{{ getTypeName(s.type) }}</td>
+                <td>{{ getStatusName(s.status) }}</td>
+              </tr>
+                <!-- <tr *ngFor="let product of resProd.lists">
+                    <td>
+                      <a routerLink="/productdetails/{{product.id}}" *ngIf="_mod=='PD'"><i class="bi bi-pencil"></i></a>
+                      <a routerLink="/productinquiry/{{product.id}}" *ngIf="_mod=='PI'"><i class="bi bi-zoom-in"></i></a>
+                    </td>
+                    <td>{{ product.partNo }}</td>
+                    <td>{{ product.cDescription }} </td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.cCode }}</td>
+                    <td>{{ product.application }}</td>
+                    <td>{{ product.mainGroup }}</td>
+                    <td>{{ product.aRef }}</td>
+                </tr> -->
+            </tbody>
+        </table>
+      </div>
+      <div class="d-flex" *ngIf="sessions.lists.length > 0">
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" tabindex="-1" (click)="clickPageTasks(sessions.pageNum-1)">Previous</a>
+          </li>
+          <ng-container *ngFor="let pageNo of sessions.pageNoList">
+            <li class="page-item" [ngClass]="{'active' : sessions.pageNum === pageNo }"><a class="page-link" (click)="clickPageTasks(pageNo)">{{ pageNo }}</a></li>
+          </ng-container>
+          <li class="page-item">
+            <a class="page-link" (click)="clickPageTasks(sessions.pageNum+1)">Next</a>
+          </li>
+        </ul>
+        <div class="ms-auto">
+          <label>{{ 1 + ((sessions.pageNum - 1) * 10) }} - {{ sessions.totalRecords > (sessions.pageNum * 10) ? (sessions.pageNum * 10) : sessions.totalRecords }} of {{ sessions.totalRecords }}</label>
+        </div>
+      </div>
+      <div *ngIf="sessions.lists.length == 0">
+        <div class="ms-auto" style="text-align: center;">
+          <label>No tasks found</label>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="d-flex" *ngIf="resProd.lists.length > 0">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" tabindex="-1" (click)="clickPage(resProd.pageNum-1)">Previous</a>
+        </li> 
+        <ng-container *ngFor="let pageNo of resProd.pageNoList">
+          <li class="page-item" [ngClass]="{'active' : resProd.pageNum === pageNo }"><a class="page-link" (click)="clickPage(pageNo)">{{ pageNo }}</a></li>
+        </ng-container>
+        <li class="page-item">
+          <a class="page-link" (click)="clickPage(resProd.pageNum+1)">Next</a>
+        </li>
+      </ul>
+      <div class="ms-auto">
+        <label>{{ 1 + ((resProd.pageNum - 1) * 10) }} - {{ resProd.totalRecords > (resProd.pageNum * 10) ? (resProd.pageNum * 10) : resProd.totalRecords }} of {{ resProd.totalRecords }}</label>
+      </div>
+    </div>
+    <div *ngIf="resProd.lists.length == 0">
+      <div class="ms-auto" style="text-align: center;">
+        <label>No records found</label>
+      </div>
+    </div> -->
+</div>
+
+<!-- <div class="inventory-stock-take-root">
+  <div *ngIf="loading">Loading...</div>
+
+  <div class="actions">
+    <button (click)="addNew()">New Session</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Warehouse</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Freeze</th>
+        <th>Created</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let s of sessions">
+        <td>{{s.name}}</td>
+        <td>{{s.warehouseID}}</td>
+        <td>{{s.type}}</td>
+        <td>{{s.status}}</td>
+        <td>{{s.freezeTransactions ? 'Yes' : 'No'}}</td>
+        <td>{{s.createdDate}}</td>
+        <td><button (click)="edit(s)">Edit</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div> -->

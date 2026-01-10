@@ -1,33 +1,24 @@
 <div id="sidebar-wrapper">
     <ul class="sidebar-nav">
         <li><a routerLink="/">Dashboard</a></li>
-        <li><a>Settings</a>
-            <ul>
-                <li>
-                    <a routerLink="/user" routerLinkActive="active">Users</a>
-                </li>
+        <li *ngFor="let group of modulesDto;">
+            <a>{{ group.Module }}</a>
+
+            <ul *ngIf="group.Menus.length > 0">
+            <li *ngFor="let menu of group.Menus;">
+                <a [routerLink]="menu.RouterLink" routerLinkActive="active">
+                {{ menu.Menu }}
+                </a>
+            </li>
             </ul>
         </li>
-        <li><a>Inventory</a>
-            <ul>
-                <li>
-                    <a routerLink="/product" routerLinkActive="active">Products</a>
-                </li>
-                <li>
-                    <a routerLink="/productinquiry">Product Inquiry</a>
-                </li>
-                <li>
-                    <a routerLink="/productstocktake">Stock Take</a>
-                </li>
-            </ul>
-        </li>
-        <li><a>Purchases</a></li>
+        <!-- <li><a>Purchases</a></li>
         <li><a>Sales</a></li>
-        <li><a>Report</a>
+        <li><a>Report</a> -->
             <!-- <ul>
                 <li><a>Summary Reports</a></li>
-            </ul> -->
-        </li>
+            </ul> 
+        </li>-->
         <li><a class="link" (click)="logout()">Logout</a></li>
     </ul>
 </div>

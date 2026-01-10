@@ -1,0 +1,27 @@
+body { margin: 0 }
+.sheet-outer {
+    margin: 0;
+}
+.sheet {
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    box-sizing: border-box;
+    page-break-after: always;
+}
+
+.sheet-outer .A4 .sheet { 
+    width: 210mm; 
+    height: 296mm 
+}
+.sheet.padding-5mm { padding: 5mm }
+
+@page {
+    size: A4;
+    margin: 0
+}
+@media print {
+    .sheet-outer.A4, .sheet-outer.A5.landscape { 
+        width: 210mm 
+    }
+}
