@@ -1,38 +1,243 @@
-<div class="main-header">
-    <h5>Dashboard</h5>
-</div>
-<div class="col-sm-12 search-header">
-    <div class="card">
-      <div class="card-header">
-        <div class="row">
-          <label><b>Approval(s)</b></label>
-        </div>
-      </div>
-      <div class="card-body">
-        <!-- <table class="table table-striped table-hover">
-            <thead>
-                <tr class="table-primary">
-                    <th style="width:15%">Module</th>
-                    <th style="width:15%">Date</th>
-                    <th style="width:15%">Trans Num</th>
-                    <th style="width:40%">Comments</th>
-                    <th style="width:15%">Approve / Reject</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Product</td>
-                    <td>01/01/2023</td>
-                    <td>1231241</td>
-                    <td>Override Vendor Code</td>
-                    <td>
-                        <button type="button" class="btn btn-success">Approve</button>
-                        &nbsp;
-                        <button type="button" class="btn btn-danger">Reject</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table> -->
-      </div>
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2>Dashboard Overview</h2>
+        <p class="text-muted">Welcome back! Here's what's happening today.</p>
     </div>
-  </div>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="kpi-card kpi-sales">
+                <div class="kpi-icon">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div class="kpi-content">
+                    <h6 class="kpi-label">Total Sales</h6>
+                    <h3 class="kpi-value">₱{{ kpiData.totalSales | number:'1.0-0' }}</h3>
+                    <span class="kpi-trend positive">
+                        <i class="bi bi-arrow-up"></i> 12.5% vs last month
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="kpi-card kpi-purchases">
+                <div class="kpi-icon">
+                    <i class="bi bi-cart"></i>
+                </div>
+                <div class="kpi-content">
+                    <h6 class="kpi-label">Total Purchases</h6>
+                    <h3 class="kpi-value">₱{{ kpiData.totalPurchases | number:'1.0-0' }}</h3>
+                    <span class="kpi-trend positive">
+                        <i class="bi bi-arrow-up"></i> 8.2% vs last month
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="kpi-card kpi-products">
+                <div class="kpi-icon">
+                    <i class="bi bi-box"></i>
+                </div>
+                <div class="kpi-content">
+                    <h6 class="kpi-label">Products Sold</h6>
+                    <h3 class="kpi-value">{{ kpiData.productsSold | number:'1.0-0' }}</h3>
+                    <span class="kpi-trend positive">
+                        <i class="bi bi-arrow-up"></i> 15.3% vs last month
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="kpi-card kpi-profit">
+                <div class="kpi-icon">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <div class="kpi-content">
+                    <h6 class="kpi-label">Gross Profit</h6>
+                    <h3 class="kpi-value">₱{{ kpiData.grossProfit | number:'1.0-0' }}</h3>
+                    <span class="kpi-trend positive">
+                        <i class="bi bi-arrow-up"></i> 18.7% vs last month
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row mb-4">
+        <div class="col-md-8 mb-3">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-bar-chart"></i> Sales vs Purchases (Last 6 Months)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas baseChart
+                        [data]="salesPurchasesChartData"
+                        [options]="salesPurchasesChartOptions"
+                        [type]="salesPurchasesChartType">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-pie-chart"></i> Sales by Category</h5>
+                </div>
+                <div class="card-body">
+                    <canvas baseChart
+                        [data]="categoryPieChartData"
+                        [options]="categoryPieChartOptions"
+                        [type]="categoryPieChartType">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-graph-up"></i> Monthly Sales Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas baseChart
+                        [data]="salesTrendChartData"
+                        [options]="salesTrendChartOptions"
+                        [type]="salesTrendChartType">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-pie-chart"></i> Purchase Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas baseChart
+                        [data]="purchaseDistChartData"
+                        [options]="purchaseDistChartOptions"
+                        [type]="purchaseDistChartType">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Items Row -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="data-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-star"></i> Top 5 Products</h5>
+                </div>
+                <div class="card-body">
+                    <div class="top-item" *ngFor="let product of topProducts; let i = index">
+                        <div class="rank-badge">{{ i + 1 }}</div>
+                        <div class="item-info">
+                            <h6>{{ product.name }}</h6>
+                            <small class="text-muted">{{ product.category }}</small>
+                        </div>
+                        <div class="item-value">
+                            <span class="value">{{ product.sales | number:'1.0-0' }}</span>
+                            <small>units</small>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" [style.width.%]="(product.sales / topProducts[0].sales) * 100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="data-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-people"></i> Top 5 Customers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="top-item" *ngFor="let customer of topCustomers; let i = index">
+                        <div class="rank-badge">{{ i + 1 }}</div>
+                        <div class="item-info">
+                            <h6>{{ customer.name }}</h6>
+                            <small class="text-muted">{{ customer.type }}</small>
+                        </div>
+                        <div class="item-value">
+                            <span class="value">₱{{ customer.amount | number:'1.0-0' }}</span>
+                            <small>total</small>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" [style.width.%]="(customer.amount / topCustomers[0].amount) * 100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="data-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-truck"></i> Top 5 Vendors</h5>
+                </div>
+                <div class="card-body">
+                    <div class="top-item" *ngFor="let vendor of topVendors; let i = index">
+                        <div class="rank-badge">{{ i + 1 }}</div>
+                        <div class="item-info">
+                            <h6>{{ vendor.name }}</h6>
+                            <small class="text-muted">{{ vendor.category }}</small>
+                        </div>
+                        <div class="item-value">
+                            <span class="value">₱{{ vendor.amount | number:'1.0-0' }}</span>
+                            <small>purchases</small>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" [style.width.%]="(vendor.amount / topVendors[0].amount) * 100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Percentage/Gauge Charts -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="percentage-card">
+                <h6>Sales Target</h6>
+                <div class="percentage-circle" [style.background]="getGradient(78, '#28a745')">
+                    <div class="percentage-value">78%</div>
+                    <div class="percentage-label">of target</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="percentage-card">
+                <h6>Purchase Budget</h6>
+                <div class="percentage-circle" [style.background]="getGradient(65, '#17a2b8')">
+                    <div class="percentage-value">65%</div>
+                    <div class="percentage-label">used</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="percentage-card">
+                <h6>Profit Margin</h6>
+                <div class="percentage-circle" [style.background]="getGradient(42, '#ffc107')">
+                    <div class="percentage-value">42%</div>
+                    <div class="percentage-label">margin</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="percentage-card">
+                <h6>Inventory Turnover</h6>
+                <div class="percentage-circle" [style.background]="getGradient(85, '#dc3545')">
+                    <div class="percentage-value">85%</div>
+                    <div class="percentage-label">efficiency</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

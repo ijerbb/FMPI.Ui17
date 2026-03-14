@@ -4,13 +4,11 @@
 
 .navbar {
     position: relative;
-    /* display: flex; */
     align-items: center;
     padding: 0.5rem 1rem;
 }
 
 .navbar-expand .navbar-collapse {
-    /* display: flex!important; */
     flex-basis: auto;
 }
 

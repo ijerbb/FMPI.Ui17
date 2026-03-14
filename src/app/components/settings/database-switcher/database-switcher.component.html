@@ -1,0 +1,50 @@
+<div class="database-switcher" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+  <!-- Toggle Button -->
+  <button
+    class="btn btn-primary"
+    (click)="toggleSwitcher()"
+    style="border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; font-weight: 500;"
+    title="Switch Database">
+    <i class="bi bi-database"></i>
+    <span>{{ currentDatabase }}</span>
+  </button>
+
+  <!-- Switcher Panel -->
+  <div *ngIf="showSwitcher" class="card mt-2" style="width: 250px; position: absolute; bottom: 60px; right: 0;">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <span>Switch Database</span>
+      <button type="button" class="btn-close btn-close-white" (click)="toggleSwitcher()"></button>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label">Current:</label>
+        <div class="alert alert-info py-1">{{ currentDatabase }}</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="databaseSelect">Switch to:</label>
+        <select
+          class="form-select"
+          id="databaseSelect"
+          [(ngModel)]="selectedDatabase"
+          [disabled]="isLoading">
+          <option *ngFor="let db of databases" [value]="db.DatabaseName">
+            {{ db.DisplayName }}
+          </option>
+        </select>
+      </div>
+      <div class="d-grid gap-2">
+        <button
+          class="btn btn-primary btn-sm"
+          (click)="switchDatabase()"
+          [disabled]="isLoading || selectedDatabase === currentDatabase">
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+          {{ isLoading ? 'Switching...' : 'Switch Database' }}
+        </button>
+        <button class="btn btn-secondary btn-sm" (click)="cancelSwitch()" [disabled]="isLoading">
+          Cancel
+        </button>
+      </div>
+      <div class="text-danger mt-2 small" *ngIf="errorMsg">{{ errorMsg }}</div>
+    </div>
+  </div>
+</div>

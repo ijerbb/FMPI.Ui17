@@ -47,3 +47,5 @@ dotnet-devcert.crt
 dotnet-devcert.key
 fmpicert.crt
 fmpicert.key
+dotnet-devcert.crt
+dotnet-devcert.key

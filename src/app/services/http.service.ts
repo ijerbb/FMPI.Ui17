@@ -19,6 +19,8 @@ import { StockTakeTaskDto } from '../models/dto/stockTakeTaskDto';
 import { StockCountEntryDto } from '../models/dto/stockCountEntryDto';
 import { map } from 'rxjs';
 import { MenusDto } from '../models/dto/menusDto';
+import { TransactionHistoryDto } from '../models/dto/transactionHistoryDto';
+import { DatabaseConfig } from '../models/dto/databaseConfig';
 
 @Injectable({
   providedIn: 'root'
@@ -40,9 +42,11 @@ export class HttpService {
   private getTasksBySessionAction = "GetTasksBySession";
   private recordStockCountEntryAction = "RecordCountEntry";
   private getCountsByTaskAction = "GetCountsByTask";
-  private getTaskBySessionProductAction = "GetTaskBySessionAndProduct";
+  private getTaskBySessionProductAction = "GetTaskBySessionAndProductAndUserId";
   private createStockTakeTaskAction = "AddTask";
+  private updateStockTakeTaskAction = "UpdateTask";
   private countTasksBySessionAction = "CountTasksBySession";
+  private syncActualInventoryAction = "SyncActualInventory";
   private getUserIdAction = "GetUserId";
 
   private getAllUsersAction = "AllUsers";
@@ -53,6 +57,9 @@ export class HttpService {
   private verifyOverrideAction = "VerifyOverride";
   private getMenusAction = "GetMenus";
   private logoutUserAction = "LogoutUser";
+  private getAvailableDatabasesAction = "GetAvailableDatabases";
+  private getSessionInfoAction = "GetSessionInfo";
+  private switchDatabaseAction = "SwitchDatabase";
 
   constructor(private http: HttpClient) { }
 
@@ -109,6 +116,10 @@ export class HttpService {
     return this.http.get<StockTakeTaskDto>(environment.apiUrl + '/Inventory/' + this.getTaskBySessionProductAction + '?sessionId=' + sessionId + '&productId=' + productId);
   }
 
+  public getTaskBySessionAndProductAndUserId(sessionId: number, productId: number, userId: number): Observable<StockTakeTaskDto> {
+    return this.http.get<StockTakeTaskDto>(environment.apiUrl + '/Inventory/' + this.getTaskBySessionProductAction + '?sessionId=' + sessionId + '&productId=' + productId + '&userId=' + userId);
+  }
+
   public getUserId(token: string) : Observable<ResponseDto> {
     return this.http.get<ResponseDto>(environment.apiUrl + '/Settings/' + this.getUserIdAction + '?token=' + token);
   }
@@ -131,12 +142,20 @@ export class HttpService {
     return this.http.get<ResponseListDto<StockCountEntryDto>>(environment.apiUrl + '/Inventory/' + this.getCountsByTaskAction + '?taskId=' + taskId);
   }
 
+  public getTaskById(taskId: number): Observable<StockTakeTaskDto> {
+    return this.http.get<StockTakeTaskDto>(environment.apiUrl + '/Inventory/GetTaskById?taskId=' + taskId);
+  }
+
   public createStockTakeSession(dto: StockTakeSessionDto): Observable<any> {
     return this.http.post(environment.apiUrl + '/Inventory/' + this.createStockTakeSessionsAction, dto);
   }
 
   public updateStockTakeSession(dto: StockTakeSessionDto): Observable<any> {
     return this.http.put(environment.apiUrl + '/Inventory/' + this.updateStockTakeSessionsAction, dto);
+  }
+
+  public updateStockTakeTask(dto: StockTakeTaskDto): Observable<ResponseDto> {
+    return this.http.patch<ResponseDto>(environment.apiUrl + '/Inventory/' + this.updateStockTakeTaskAction, dto);
   }
 
   public getAllUsers() {
@@ -159,6 +178,10 @@ export class HttpService {
     return this.http.get<ResponseDto>(environment.apiUrl + '/Settings/' + this.verifyAccessRightsAction + '?token=' + token + '&userAccess=' + userAccess);
   }
 
+  public getTransactionHistoryByProductId(productId: number): Observable<TransactionHistoryDto[]> {
+    return this.http.get<TransactionHistoryDto[]>(environment.apiUrl + '/Inventory/GetTransactionHistoryByProductId?productId=' + productId);
+  }
+
   public verifyOverride(password:string): Observable<ResponseDto> {
     return this.http.get<ResponseDto>(environment.apiUrl + '/Settings/' + this.verifyOverrideAction + '?requestData=' + password);
   }
@@ -169,5 +192,25 @@ export class HttpService {
 
   public logoutUser(userDto: UserDto): Observable<ResponseDto> {
     return this.http.post<ResponseDto>(environment.apiUrl + '/Settings/' + this.logoutUserAction, userDto);
+  }
+
+  public syncActualInventory(sessionId: number, userId?: number): Observable<ResponseDto> {
+    let url = environment.apiUrl + '/Inventory/' + this.syncActualInventoryAction + '?sessionId=' + sessionId;
+    if (userId !== undefined && userId !== null) {
+      url += '&userId=' + userId;
+    }
+    return this.http.post<ResponseDto>(url, {});
+  }
+
+  public getAvailableDatabases(): Observable<ResponseDto> {
+    return this.http.get<ResponseDto>(environment.apiUrl + '/Settings/' + this.getAvailableDatabasesAction);
+  }
+
+  public getSessionInfo(token: string): Observable<ResponseDto> {
+    return this.http.get<ResponseDto>(environment.apiUrl + '/Settings/' + this.getSessionInfoAction + '?token=' + token);
+  }
+
+  public switchDatabase(userDto: UserDto): Observable<ResponseDto> {
+    return this.http.post<ResponseDto>(environment.apiUrl + '/Settings/' + this.switchDatabaseAction, userDto);
   }
 }

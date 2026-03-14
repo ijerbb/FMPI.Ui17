@@ -1,7 +1,28 @@
 <form class="form-signin">
-    <h1 class="h3 mb-3 font-weight-normal">Please Sign In</h1>
+    <div class="logo-container mb-3">
+        <img src="assets/images/FargoLogo.jpg" alt="Fargo Logo" class="login-logo">
+    </div>
+
+    <div class="mb-3" *ngIf="databases.length > 0; else noDatabases">
+        <label for="databaseSelect" class="form-label">Select Database</label>
+        <select class="form-select" id="databaseSelect" [(ngModel)]="selectedDatabase" name="database" (change)="onDatabaseChange()">
+            <option value="" disabled selected>Select a database</option>
+            <option *ngFor="let db of databases" [value]="db.DatabaseName">{{ db.DisplayName }}</option>
+        </select>
+    </div>
+    <ng-template #noDatabases>
+        <div class="mb-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status" *ngIf="!errorMsg">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="alert alert-warning py-2 mb-0" *ngIf="errorMsg">
+                <i class="bi bi-exclamation-triangle"></i> {{ errorMsg }}
+            </div>
+        </div>
+    </ng-template>
+    
     <input type="text" id="inputEmail" class="form-control" placeholder="User ID" required autofocus [(ngModel)]="user.code" name="userid" (keypress)="onKeyPressEvent($event)">
     <input type="password" id="inputPassword" class="form-control" placeholder="Password" required [(ngModel)]="user.password" name="userpassword" (keypress)="onKeyPressEvent($event)">
-    <button class="btn btn-lg btn-primary btn-block" type="button" (click)="verify()">Sign In</button>
-    {{ errorMsg }}
+    <button class="btn btn-lg btn-primary btn-block" type="button" (click)="verify()" [disabled]="!selectedDatabase">Sign In</button>
+    <div class="text-danger mt-2" *ngIf="errorMsg && !databases.length">{{ errorMsg }}</div>
 </form>

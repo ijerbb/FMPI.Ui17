@@ -18,6 +18,7 @@ export class MainComponent {
   successAlert:boolean;
   errorAlert: boolean;
   customErrorAlert: string;
+  customSuccessAlert: string;
 
   constructor(alertService:AlertService) {
     this.successAlert = false;
@@ -36,6 +37,12 @@ export class MainComponent {
     alertService.customErrorAlert.subscribe((message: string) => {
       this.customErrorAlert = message;
       this.setcustomErrorAlertTimeOut();
+    });
+
+    this.customSuccessAlert = "";
+    alertService.customSuccessAlert.subscribe((message: string) => {
+      this.customSuccessAlert = message;
+      this.setCustomSuccessAlertTimeOut();
     });
   }
 
@@ -62,6 +69,12 @@ export class MainComponent {
   setcustomErrorAlertTimeOut(){
     setTimeout(() => {
       this.customErrorAlert = "";
+    }, 3000);
+  }
+
+  setCustomSuccessAlertTimeOut(){
+    setTimeout(() => {
+      this.customSuccessAlert = "";
     }, 3000);
   }
 }

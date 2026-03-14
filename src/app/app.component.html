@@ -1,13 +1,15 @@
 <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" /> -->
 <body>
+  <!-- Login Page - shown only when NOT logged in -->
   <app-login *ngIf="!loginStatus" (verifyCred)="onVerifyCred($event)"></app-login>
-  
-  <div id="wrapper" [ngClass]="{'toggled': menuToggled }">
+
+  <!-- Main App Wrapper - shown only when logged in -->
+  <div id="wrapper" *ngIf="loginStatus" [ngClass]="{'toggled': menuToggled }">
       <div class="wrappercell">
-          <app-nav-sidemenu *ngIf="loginStatus" (toggleLogout)="onLogoutToggled()"></app-nav-sidemenu>
+          <app-nav-sidemenu (toggleLogout)="onLogoutToggled()"></app-nav-sidemenu>
       </div>
       <div class="wrappercell">
-          <app-main *ngIf="loginStatus" (toggleMainMenuToggled)="onMenuToggled()"></app-main>
+          <app-main (toggleMainMenuToggled)="onMenuToggled()"></app-main>
       </div>
   </div>
 </body>

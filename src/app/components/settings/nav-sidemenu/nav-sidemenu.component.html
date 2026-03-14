@@ -12,14 +12,67 @@
             </li>
             </ul>
         </li>
-        <!-- <li><a>Purchases</a></li>
-        <li><a>Sales</a></li>
-        <li><a>Report</a> -->
-            <!-- <ul>
-                <li><a>Summary Reports</a></li>
-            </ul> 
-        </li>-->
-        <li><a class="link" (click)="logout()">Logout</a></li>
+        
+        <!-- Sidebar Footer Container -->
+        <div class="sidebar-footer-container">
+            <!-- User Section -->
+            <li class="sidebar-footer">
+                <div class="footer-item" (click)="toggleUserMenu()">
+                    <i class="bi bi-person-circle"></i>
+                    <span>{{ username }}</span>
+                </div>
+                <div *ngIf="showUserMenu" class="user-menu-panel">
+                    <button class="btn-logout" (click)="logout()">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout
+                    </button>
+                </div>
+            </li>
+            
+            <!-- Database Section -->
+            <li class="sidebar-footer">
+                <div class="footer-item" (click)="toggleDatabaseMenu()">
+                    <i class="bi bi-database"></i>
+                    <span>{{ currentDatabase }}</span>
+                </div>
+                <div *ngIf="showDatabaseMenu" class="database-menu-panel">
+                    <div class="panel-header">
+                        <span>Switch Database</span>
+                        <button class="btn-close-panel" (click)="toggleDatabaseMenu()">×</button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="mb-2">
+                            <label class="form-label small">Current:</label>
+                            <div class="current-db-badge">{{ currentDatabase }}</div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Switch to:</label>
+                            <select
+                                class="form-select form-select-sm"
+                                [(ngModel)]="selectedDatabase"
+                                [disabled]="isLoading">
+                                <option *ngFor="let db of databases" [value]="db.DatabaseName">
+                                    {{ db.DisplayName }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button
+                                class="btn btn-primary btn-sm"
+                                (click)="switchDatabase()"
+                                [disabled]="isLoading || selectedDatabase === currentDatabase">
+                                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                                {{ isLoading ? 'Switching...' : 'Switch Database' }}
+                            </button>
+                            <button class="btn btn-secondary btn-sm" (click)="cancelSwitch()" [disabled]="isLoading">
+                                Cancel
+                            </button>
+                        </div>
+                        <div class="text-danger mt-2 small" *ngIf="errorMsg">{{ errorMsg }}</div>
+                    </div>
+                </div>
+            </li>
+        </div>
     </ul>
 </div>
 <!-- <nav id="sidebarMenu" class="col-sm-12 col-md-2 col-lg-2 d-md-block bg-light sidebar collapse">

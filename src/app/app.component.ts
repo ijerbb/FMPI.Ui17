@@ -20,13 +20,13 @@ export class AppComponent {
   constructor(private router: Router){
     var sessionToken = localStorage.getItem('sessionToken');
     if(!sessionToken){
-      this.router.navigate(['/']);
+      this.router.navigate(['/login']);
     } else {
       this.loginStatus = true;
     }
   }
 
-  onNgInit(){
+  ngOnInit(){
   }
 
   onVerifyCred(status: boolean){
@@ -39,5 +39,6 @@ export class AppComponent {
 
   onLogoutToggled() {
     this.loginStatus = false;
+    this.menuToggled = false; // Reset menu toggle state on logout
   }
 }

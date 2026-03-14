@@ -17,16 +17,53 @@
     padding: 0;
     list-style: none;
     background: #000;
-    height: calc(100% - 58px);
+    height: 100vh;
     min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-nav > li:not(.sidebar-footer) {
+    flex-shrink: 0;
+}
+
+.sidebar-footer-container {
+    margin-top: auto;
+    width: 100%;
+}
+
+.sidebar-footer {
+    position: relative;
+    width: 100%;
+    min-height: 46px;
+}
+
+.sidebar-footer:first-child {
+    border-top: 1px solid #333;
+}
+
+.sidebar-footer:last-child {
+    border-top: 1px solid #333;
 }
 
 .sidebar-nav ul {
     list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 
-.sidebar-nav li {
+.sidebar-nav > li {
     text-indent: 20px;
+    line-height: 40px;
+}
+
+.sidebar-nav > li > ul {
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav > li > ul > li {
+    text-indent: 40px;
     line-height: 40px;
 }
 
@@ -46,38 +83,167 @@
     text-decoration: none;
 }
 
-.sidebar-nav>.sidebar-brand {
-    height: 65px;
-    font-size: 18px;
-    line-height: 60px;
-}
-
-.sidebar-nav>.sidebar-brand a {
-    color: #999999;
-}
-
-.sidebar-nav>.sidebar-brand a:hover {
-    color: #fff;
-    background: none;
-}
-
-@media(min-width:768px) {
-    #wrapper.toggled #sidebar-wrapper{
-        margin-left: 0;
-    }
-}
-
-@media(min-width:375) {
-    #wrapper.toggled #sidebar-wrapper{
-        margin-left: 0;
-    }
-}
-
-@media(max-height:100) {
-}
-
 .link {
     cursor: pointer;
+}
+
+.footer-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    color: #999999;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-indent: 0;
+}
+
+.footer-item:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.footer-item i {
+    font-size: 16px;
+}
+
+.footer-item span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* User Menu Panel */
+.user-menu-panel {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    padding: 10px;
+    z-index: 100;
+}
+
+.btn-logout {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid #999;
+    color: #999;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-logout:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: #fff;
+}
+
+/* Database Menu Panel */
+.database-menu-panel {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    padding: 14px;
+    color: #999;
+    z-index: 100;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.btn-close-panel {
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-close-panel:hover {
+    color: #fff;
+}
+
+.panel-body {
+    color: #999;
+}
+
+.panel-body .form-label {
+    color: #999;
+    margin-bottom: 4px;
+    font-size: 12px;
+}
+
+.current-db-badge {
+    background: rgba(0, 123, 255, 0.3);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.panel-body .form-select {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 6px 10px;
+}
+
+.panel-body .form-select:focus {
+    background: #2a2a2a;
+    border-color: #007bff;
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.panel-body .btn-primary {
+    background: #007bff;
+    border-color: #007bff;
+}
+
+.panel-body .btn-primary:disabled {
+    background: #444;
+    border-color: #444;
+}
+
+.panel-body .btn-secondary {
+    background: #444;
+    border-color: #444;
+    color: #fff;
+}
+
+.panel-body .btn-secondary:disabled {
+    background: #333;
+    border-color: #333;
+}
+
+.panel-body .spinner-border-sm {
+    width: 12px;
+    height: 12px;
+    border-width: 1.5px;
 }
 /* .sidebar {
     position: fixed;

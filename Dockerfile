@@ -20,12 +20,12 @@ COPY . ./
 COPY package*.json ./
 
 RUN npm install -g @angular/cli && \
-    npm install && \
+    npm install --legacy-peer-deps && \
     npm run build-prod
 
 # Stage 2
 FROM nginx:latest
-WORKDIR /app    
+WORKDIR /app
 COPY --from=build /app/dist/FMPI.Ui/browser /usr/share/nginx/html
 EXPOSE 4200
 COPY /nginx.conf  /etc/nginx/conf.d/default.conf

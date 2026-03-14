@@ -12,7 +12,7 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { DomSanitizer, SafeHtml, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 
 import pdfMake from "pdfmake/build/pdfmake";  
-import pdfFonts from "pdfmake/build/vfs_fonts";  
+import * as pdfFonts from "pdfmake/build/vfs_fonts";  
 import { SafePipe } from 'safe-pipe';
 import { ProductSearchDto } from '../../../models/dto/productSearchDto';
 
@@ -237,8 +237,8 @@ export class ProductDetailComponent implements OnInit{
     this.qrContent(docDefinition.content, qrItemIdList, this.qrSetting);
     
    
-    //pdfMake.vfs = pdfFonts.pdfMake.vfs; 
-    (pdfMake as any).vfs = (pdfFonts as any).pdfMake.vfs;
+    //pdfMake.vfs = pdfFonts.pdfMake.vfs;
+    (pdfMake as any).vfs = (pdfFonts as any).vfs;
     pdfMake.createPdf(docDefinition).getBlob(res=>{
       const url = URL.createObjectURL(res);
       this.qrPDF = this.sanitizer.bypassSecurityTrustResourceUrl(url);

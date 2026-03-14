@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,10 +9,10 @@ import { Router } from '@angular/router';
   templateUrl: './nav-menu.component.html',
   styleUrl: './nav-menu.component.css'
 })
-export class NavMenuComponent {
+export class NavMenuComponent implements OnInit {
   @Output() toggleMenu = new EventEmitter();
   @Output() toggleLogout = new EventEmitter();
-  
+
   toggled: boolean = false;
 
   constructor(private router: Router) { }
@@ -27,6 +27,7 @@ export class NavMenuComponent {
 
   logout() {
     localStorage.removeItem("sessionToken");
+    this.toggled = false; // Reset toggle state
     this.router.navigate(['/login']);
     this.toggleLogout.emit();
   }

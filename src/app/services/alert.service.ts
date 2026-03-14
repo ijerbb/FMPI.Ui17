@@ -10,10 +10,12 @@ export class AlertService {
   errorAlert: Observable<boolean>;
 
   customErrorAlert: Observable<string>;
+  customSuccessAlert: Observable<string>;
 
   private successAlertStatus = new Subject<boolean>();
   private errorAlertStatus = new Subject<boolean>();
   private customErrorAlertStatus = new Subject<string>();
+  private customSuccessAlertStatus = new Subject<string>();
 
   constructor() {
     this.successAlertStatus = new Subject<boolean>();
@@ -24,6 +26,9 @@ export class AlertService {
 
     this.customErrorAlertStatus = new Subject<string>();
     this.customErrorAlert = this.customErrorAlertStatus.asObservable();
+
+    this.customSuccessAlertStatus = new Subject<string>();
+    this.customSuccessAlert = this.customSuccessAlertStatus.asObservable();
   }
 
   setSuccessAlert(){
@@ -36,5 +41,9 @@ export class AlertService {
 
   setCustomErrorAlert(message:string){
     this.customErrorAlertStatus.next(message);
+  }
+
+  setCustomSuccessAlert(message:string){
+    this.customSuccessAlertStatus.next(message);
   }
 }

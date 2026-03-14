@@ -7,6 +7,17 @@
     text-align: center!important;
 }
 
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-logo {
+    max-width: 200px;
+    height: auto;
+}
+
 .form-signin input[type="email"]{
     margin-bottom: -1px;
     border-bottom-right-radius: 0;
