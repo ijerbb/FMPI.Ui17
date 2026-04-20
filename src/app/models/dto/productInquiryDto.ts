@@ -1,6 +1,7 @@
 export class productInquiryDto {
     id?: number;
     moduleType = "";
+    moduleTypeName = "";
     transDate? = "";
     transNum = "";
     transName = "";

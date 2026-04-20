@@ -13,6 +13,8 @@ import { AlertService } from '../../../services/alert.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ProductDto } from '../../../models/dto/productDto';
 import { CryptoService } from '../../../services/crypto.service';
+import { StockTakeTaskStatus } from '../../../models/constants/stock-take-status';
+import { PaginationComponent } from '../../../components/shared/pagination/pagination.component';
 import * as CryptoJS from 'crypto-js'; // Move to Security Helper
 
 // Declare bootstrap global
@@ -21,7 +23,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-inventory-stock-take-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ActionMenuComponent, NgbModule],
+  imports: [CommonModule, FormsModule, RouterModule, ActionMenuComponent, NgbModule, PaginationComponent],
   templateUrl: './inventory-stock-take-detail.component.html',
   styleUrls: ['../../settings/main/main.component.css', './inventory-stock-take-detail.component.css']
 })
@@ -35,7 +37,23 @@ export class InventoryStockTakeDetailComponent implements OnInit {
   foundTask?: StockTakeTaskDto;
   foundDescription: any = '';
   stockTakeEntryProdDto: ProductDto = null as any;
-  taskCounts: { pending: number; autoCounted: number; counted: number; verified: number; reviewed: number; autoReviewed: number; total: number } = { pending: 0, autoCounted: 0, counted: 0, verified: 0, reviewed: 0, autoReviewed: 0, total: 0 };
+  taskCounts: { 
+    pending: number; pendingValue: number;
+    autoCounted: number; autoCountedValue: number;
+    counted: number; countedValue: number;
+    verified: number; verifiedValue: number;
+    reviewed: number; reviewedValue: number;
+    autoReviewed: number; autoReviewedValue: number;
+    total: number; totalValue: number;
+  } = { 
+    pending: 0, pendingValue: 0,
+    autoCounted: 0, autoCountedValue: 0,
+    counted: 0, countedValue: 0,
+    verified: 0, verifiedValue: 0,
+    reviewed: 0, reviewedValue: 0,
+    autoReviewed: 0, autoReviewedValue: 0,
+    total: 0, totalValue: 0
+  };
   countedQty: number | null = 0;
   countNotes: string = '';
   pendingCreateDto: any = null;
@@ -49,6 +67,7 @@ export class InventoryStockTakeDetailComponent implements OnInit {
 
   // Admin features
   isAdmin = false;
+  isAdministrator = false; // Check if current user is "Administrator"
   mismatchedTasks: StockTakeTaskDto[] = [];
   currentMismatchedIndex = 0;
   showingMismatchedTasks = false;
@@ -62,6 +81,10 @@ export class InventoryStockTakeDetailComponent implements OnInit {
   // Standardized loading system
   isLoading = false;
   loadingMessage = '';
+
+  // Batch processing for missing adjustments (temporary cleanup tool)
+  isBatchProcessing = false;
+  batchMessage = '';
 
   // Review status accordion
   showReviewAccordion = false;
@@ -91,9 +114,10 @@ export class InventoryStockTakeDetailComponent implements OnInit {
     private cryptoService: CryptoService) {}
 
   ngOnInit(): void {
-    // Check if user is admin
+    // Check if user is admin and if user is "Administrator"
     this.checkAdminStatus();
-    
+    this.checkIsAdministrator();
+
     const id = this.route.snapshot.paramMap.get('id') ?? '';
     if (id === 'new') {
       this.session = new StockTakeSessionDto();
@@ -110,8 +134,13 @@ export class InventoryStockTakeDetailComponent implements OnInit {
       // Check if user ID is cached
       if (this.cachedUserId !== null) {
         this.httpService.verifyAccessRights(token, 'IsUserAdmin').subscribe(response => {
+          const wasAdmin = this.isAdmin;
           this.isAdmin = response.success === true;
           this.updateStatusItems();
+          // If admin status changed and session is loaded, load values
+          if (this.isAdministrator && this.session?.id) {
+            this.loadTaskValues(this.session.id);
+          }
         }, err => {
           console.error('Failed to verify admin status', err);
           this.isAdmin = false;
@@ -124,8 +153,13 @@ export class InventoryStockTakeDetailComponent implements OnInit {
       this.httpService.getUserId(token).subscribe(response => {
         this.cachedUserId = Number(response.data) || 0;
         this.httpService.verifyAccessRights(token, 'IsUserAdmin').subscribe(response => {
+          const wasAdmin = this.isAdmin;
           this.isAdmin = response.success === true;
           this.updateStatusItems();
+          // If admin status changed and session is loaded, load values
+          if (this.isAdministrator && this.session?.id) {
+            this.loadTaskValues(this.session.id);
+          }
         }, err => {
           console.error('Failed to verify admin status', err);
           this.isAdmin = false;
@@ -139,6 +173,51 @@ export class InventoryStockTakeDetailComponent implements OnInit {
     } else {
       this.isAdmin = false;
       this.updateStatusItems();
+    }
+  }
+
+  /**
+   * Check if current user is "Administrator"
+   */
+  checkIsAdministrator(): void {
+    const token = localStorage.getItem('sessionToken') || '';
+
+    if (token) {
+      // Get user ID first
+      const checkUserName = (userId: number) => {
+        this.httpService.getUser(userId).subscribe(
+          response => {
+            this.isAdministrator = response?.code === 'Administrator';
+            // If session is loaded, trigger value loading
+            if (this.isAdministrator && this.session?.id) {
+              this.loadTaskValues(this.session.id);
+            }
+          },
+          err => {
+            console.error('Failed to get user info', err);
+            this.isAdministrator = false;
+          }
+        );
+      };
+
+      // Check cache first
+      if (this.cachedUserId !== null) {
+        checkUserName(this.cachedUserId);
+      } else {
+        this.httpService.getUserId(token).subscribe(
+          response => {
+            const userId = Number(response.data) || 0;
+            this.cachedUserId = userId;
+            checkUserName(userId);
+          },
+          err => {
+            console.error('Failed to get user id', err);
+            this.isAdministrator = false;
+          }
+        );
+      }
+    } else {
+      this.isAdministrator = false;
     }
   }
 
@@ -186,6 +265,8 @@ export class InventoryStockTakeDetailComponent implements OnInit {
 
   fetchTaskCounts(sessionId: number) {
     if (!sessionId) return;
+    
+    // Step 1: Load counts first (fast)
     this.httpService.countTasksBySession(sessionId).subscribe(res => {
       try {
         console.log('CountTasksBySession response:', res);
@@ -197,11 +278,36 @@ export class InventoryStockTakeDetailComponent implements OnInit {
         this.taskCounts.reviewed = obj.Reviewed ?? 0;
         this.taskCounts.autoReviewed = obj.AutoReviewed ?? 0;
         this.taskCounts.total = obj.Total ?? (this.taskCounts.pending + this.taskCounts.autoCounted + this.taskCounts.counted + this.taskCounts.verified + this.taskCounts.reviewed + this.taskCounts.autoReviewed);
+        
+        // Step 2: Lazy load values in background (only if user is "Administrator")
+        if (this.isAdministrator) {
+          this.loadTaskValues(sessionId);
+        }
       } catch (e) {
         console.error('Failed parsing CountTasksBySession response', e, res);
       }
     }, err => {
       console.error('Failed loading task counts', err);
+    });
+  }
+
+  /**
+   * Lazy load values for Counted and Auto-Counted status
+   */
+  loadTaskValues(sessionId: number) {
+    if (!sessionId || !this.isAdministrator) return;
+    
+    this.httpService.getTaskValuesBySession(sessionId).subscribe(res => {
+      try {
+        console.log('GetTaskValuesBySession response:', res);
+        const obj = JSON.parse(res.data || '{}');
+        this.taskCounts.countedValue = obj.CountedValue ?? 0;
+        this.taskCounts.autoCountedValue = obj.AutoCountedValue ?? 0;
+      } catch (e) {
+        console.error('Failed parsing GetTaskValuesBySession response', e, res);
+      }
+    }, err => {
+      console.error('Failed loading task values', err);
     });
   }
 
@@ -231,8 +337,8 @@ export class InventoryStockTakeDetailComponent implements OnInit {
       return;
     }
 
-    // Fetch all tasks from all pages and filter by status
-    this.fetchAllTasksAndFilter(this.session.id, status);
+    // Load first page of filtered tasks (with pagination support)
+    this.loadTasksByStatus(this.session.id, status, 1);
   }
 
   /**
@@ -240,91 +346,38 @@ export class InventoryStockTakeDetailComponent implements OnInit {
    */
   clearFilter(): void {
     this.selectedStatusFilter = 'All';
+    this.allTasksLoaded = []; // Clear cached tasks
     if (this.session && this.session.id) {
       this.loadTasks(this.session.id, this.tasksRes.pageNum || 1);
     }
   }
 
-  private fetchAllTasksAndFilter(sessionId: number, status: string): void {
-    this.startLoading('Filtering tasks by status...');
-
-    // Get first page to determine total pages
-    this.httpService.getTasksBySession(sessionId, 1).subscribe(
-      firstPageResult => {
-        const totalRecords = firstPageResult.totalRecords;
-        const pageSize = 10;
-        const totalPages = Math.ceil(totalRecords / pageSize);
-
-        // Start with first page tasks
-        let allTasks = [...firstPageResult.lists];
-
-        // If only one page, process immediately
-        if (totalPages === 1) {
-          this.processFilteredTasks(allTasks, status, sessionId);
-          return;
-        }
-
-        // Fetch all remaining pages
-        let pagesLoaded = 1;
-
-        const fetchNextPage = () => {
-          if (pagesLoaded >= totalPages) {
-            this.processFilteredTasks(allTasks, status, sessionId);
-            return;
-          }
-
-          pagesLoaded++;
-          this.httpService.getTasksBySession(sessionId, pagesLoaded).subscribe(
-            result => {
-              allTasks.push(...result.lists);
-              fetchNextPage();
-            },
-            err => {
-              console.error(err);
-              this.stopLoading();
-              this.alertService.setCustomErrorAlert('Failed to load all tasks for filtering');
-            }
-          );
-        };
-
-        fetchNextPage();
-      },
-      err => {
-        console.error(err);
+  /**
+   * Load tasks filtered by status with pagination (only loads requested page)
+   */
+  private loadTasksByStatus(sessionId: number, status: string, pageNum: number): void {
+    this.startLoading('Loading tasks...');
+    
+    this.httpService.getTasksBySessionAndStatus(sessionId, status, pageNum).subscribe(
+      result => {
+        this.tasksRes.pageStart = result.pageStart;
+        this.tasksRes.pageEnd = result.pageEnd;
+        this.tasksRes.pageNum = result.pageNum;
+        this.tasksRes.totalRecords = result.totalRecords;
+        this.tasksRes.lists = result.lists;
+        
+        // Generate smart page numbers (2 before and 2 after current page)
+        const totalPages = Math.ceil(result.totalRecords / 10);
+        this.tasksRes.pageNoList = this.generateSmartPageNumbers(result.pageNum, totalPages);
+        
         this.stopLoading();
-        this.alertService.setCustomErrorAlert('Failed to fetch tasks for filtering');
+      },
+      error => {
+        console.error(error);
+        this.stopLoading();
+        this.alertService.setCustomErrorAlert('Failed to load tasks by status');
       }
     );
-  }
-
-  private processFilteredTasks(allTasks: StockTakeTaskDto[], status: string, sessionId: number): void {
-    // Filter tasks by status
-    const filteredTasks = allTasks.filter(t => t.status === status);
-
-    // Store all loaded tasks
-    this.allTasksLoaded = allTasks;
-
-    // Calculate pagination for filtered results
-    const pageSize = 10;
-    const totalRecords = filteredTasks.length;
-    const totalPages = Math.ceil(totalRecords / pageSize);
-
-    // Get first page of filtered results
-    const pageStart = 0;
-    const pageEnd = Math.min(pageSize - 1, totalRecords - 1);
-    const pageTasksForDisplay = filteredTasks.slice(0, pageSize);
-
-    // Update tasksRes with filtered results
-    this.tasksRes.lists = pageTasksForDisplay;
-    this.tasksRes.pageStart = pageStart;
-    this.tasksRes.pageEnd = pageEnd;
-    this.tasksRes.pageNum = 1;
-    this.tasksRes.totalRecords = totalRecords;
-
-    // Generate smart page numbers (2 before and 2 after current page)
-    this.tasksRes.pageNoList = this.generateSmartPageNumbers(1, totalPages);
-
-    this.stopLoading();
   }
 
   /**
@@ -568,8 +621,12 @@ export class InventoryStockTakeDetailComponent implements OnInit {
 
         // If successful, close modals
         document.getElementById('modalCloseCount')?.click();
-        // refresh current page tasks
-        if (this.session && this.session.id) this.loadTasks(this.session.id, this.tasksRes.pageNum || 1);
+        
+        // Refresh the entire session detail page to show updated task status (e.g., Auto-Reviewed)
+        // and adjusting entry information
+        if (this.session && this.session.id) {
+          this.loadSession(this.session.id);
+        }
 
         // clear search / state
         this.searchBarcode = '';
@@ -678,7 +735,7 @@ export class InventoryStockTakeDetailComponent implements OnInit {
     // If a filter is active, reapply the filter instead of loading a specific page
     if (this.selectedStatusFilter !== 'All') {
       // Reapply filter to get updated data
-      this.fetchAllTasksAndFilter(sessionId, this.selectedStatusFilter);
+      this.loadTasksByStatus(sessionId, this.selectedStatusFilter, pageNo);
       return;
     }
 
@@ -699,25 +756,9 @@ export class InventoryStockTakeDetailComponent implements OnInit {
   clickPageTasks(pageNo: number): void {
     if (!this.session || !this.session.id) return;
 
-    // If a filter is active, use filtered pagination
+    // If a filter is active, use filtered pagination (load from API)
     if (this.selectedStatusFilter !== 'All') {
-      const filteredTasks = this.allTasksLoaded.filter(t => t.status === this.selectedStatusFilter);
-      const pageSize = 10;
-      const totalRecords = filteredTasks.length;
-      const totalPages = Math.ceil(totalRecords / pageSize);
-      const startIndex = (pageNo - 1) * pageSize;
-      const endIndex = pageNo * pageSize;
-
-      const pageTasksForDisplay = filteredTasks.slice(startIndex, endIndex);
-
-      this.tasksRes.lists = pageTasksForDisplay;
-      this.tasksRes.pageNum = pageNo;
-      this.tasksRes.pageStart = startIndex;
-      this.tasksRes.pageEnd = Math.min(endIndex - 1, filteredTasks.length - 1);
-      this.tasksRes.totalRecords = totalRecords;
-
-      // Generate smart page numbers (2 before and 2 after current page)
-      this.tasksRes.pageNoList = this.generateSmartPageNumbers(pageNo, totalPages);
+      this.loadTasksByStatus(this.session.id, this.selectedStatusFilter, pageNo);
     } else {
       // Otherwise, use regular pagination
       this.loadTasks(this.session.id, pageNo);
@@ -787,6 +828,69 @@ export class InventoryStockTakeDetailComponent implements OnInit {
         this.alertService.setCustomErrorAlert('Error syncing inventory');
       }
     );
+  }
+
+  /**
+   * Batch create missing adjusting entries for Reviewed/Auto-Reviewed tasks
+   * This is a temporary cleanup tool for existing data
+   */
+  openBatchConfirmModal() {
+    if (!this.session || !this.session.id) {
+      this.alertService.setCustomErrorAlert('No session selected');
+      return;
+    }
+
+    // Show confirmation modal
+    const modalElement = document.getElementById('batchConfirmModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  confirmBatchProcessing() {
+    if (!this.session || !this.session.id) {
+      this.alertService.setCustomErrorAlert('No session selected');
+      return;
+    }
+
+    // Close the modal
+    const modalElement = document.getElementById('batchConfirmModal');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      if (modal) modal.hide();
+    }
+
+    this.isBatchProcessing = true;
+    this.batchMessage = 'Fetching tasks that need adjustment entries...';
+
+    const token = localStorage.getItem('sessionToken') || '';
+    
+    this.getCachedUserId(token, (userId) => {
+      const finalUserId = userId || 0;
+      
+      this.httpService.batchCreateMissingAdjustments(this.session.id!, finalUserId).subscribe(
+        response => {
+          this.isBatchProcessing = false;
+          if (response.success) {
+            this.batchMessage = response.data || 'Batch processing complete';
+            this.alertService.setCustomSuccessAlert(this.batchMessage);
+            
+            // Refresh the session to show updated data
+            this.loadSession(this.session.id!);
+          } else {
+            this.batchMessage = 'Error: ' + response.data;
+            this.alertService.setCustomErrorAlert(this.batchMessage);
+          }
+        },
+        err => {
+          this.isBatchProcessing = false;
+          this.batchMessage = 'Error processing batch';
+          console.error('Error batch creating adjustments', err);
+          this.alertService.setCustomErrorAlert('Error processing batch');
+        }
+      );
+    });
   }
 
   cancel() {
@@ -1064,22 +1168,31 @@ export class InventoryStockTakeDetailComponent implements OnInit {
       }
     }
 
-    // All validations passed - proceed with updating the task status
+    // All validations passed - proceed with updating the task status to Reviewed
     const taskDto = new StockTakeTaskDto();
     taskDto.id = targetTask.id;
     taskDto.sessionId = targetTask.sessionId;
     taskDto.productId = targetTask.productId;
-    taskDto.status = 'Reviewed';
+    taskDto.status = StockTakeTaskStatus.Reviewed;
     taskDto.lastUpdated = new Date().toISOString();
+    taskDto.assignedTo = targetTask.assignedTo; // Include assignedTo for adjustment creation
+
+    console.log(`[ConfirmCount] Sending task update: id=${taskDto.id}, status=${taskDto.status}, assignedTo=${taskDto.assignedTo}`);
 
     this.httpService.updateStockTakeTask(taskDto).subscribe(
       response => {
         if (response.success) {
-          this.alertService.setCustomSuccessAlert('Count confirmed successfully');
-          targetTask.status = 'Reviewed';
+          this.alertService.setCustomSuccessAlert('Count confirmed successfully - Task marked as Reviewed');
+          targetTask.status = StockTakeTaskStatus.Reviewed;
           targetTask.lastUpdated = new Date().toISOString();
+          
           // Close accordion after accepting
           this.expandedTaskId = null;
+          
+          // Refresh the session to show updated data
+          if (this.session && this.session.id) {
+            this.loadSession(this.session.id);
+          }
         } else {
           this.alertService.setCustomErrorAlert('Failed to confirm count: ' + response.data);
         }
@@ -1116,14 +1229,14 @@ export class InventoryStockTakeDetailComponent implements OnInit {
     taskDto.id = targetTask.id;
     taskDto.sessionId = targetTask.sessionId;
     taskDto.productId = targetTask.productId;
-    taskDto.status = 'Reviewed';
+    taskDto.status = StockTakeTaskStatus.Reviewed;
     taskDto.lastUpdated = new Date().toISOString();
 
     this.httpService.updateStockTakeTask(taskDto).subscribe(
       response => {
         if (response.success) {
           this.alertService.setCustomSuccessAlert('Count accepted successfully');
-          targetTask.status = 'Reviewed';
+          targetTask.status = StockTakeTaskStatus.Reviewed;
           targetTask.lastUpdated = new Date().toISOString();
           // Close accordion after accepting
           this.expandedTaskId = null;
@@ -1259,8 +1372,10 @@ export class InventoryStockTakeDetailComponent implements OnInit {
       document.getElementById('modalCloseDiscrepancy')?.click();
       document.getElementById('modalCloseCount')?.click();
 
-      // refresh current page tasks
-      if (this.session && this.session.id) this.loadTasks(this.session.id, this.tasksRes.pageNum || 1);
+      // Refresh the entire session detail page to show updated task status
+      if (this.session && this.session.id) {
+        this.loadSession(this.session.id);
+      }
 
       // clear search / state
       this.searchBarcode = '';
@@ -1379,8 +1494,10 @@ export class InventoryStockTakeDetailComponent implements OnInit {
       document.getElementById('modalCloseDiscrepancy')?.click();
       document.getElementById('modalCloseCount')?.click();
 
-      // refresh current page tasks
-      if (this.session && this.session.id) this.loadTasks(this.session.id, this.tasksRes.pageNum || 1);
+      // Refresh the entire session detail page to show updated task status
+      if (this.session && this.session.id) {
+        this.loadSession(this.session.id);
+      }
 
       // clear search / state
       this.searchBarcode = '';
@@ -1455,7 +1572,7 @@ export class InventoryStockTakeDetailComponent implements OnInit {
     console.log('Searching for mismatched counts in tasks:', allTasks);
     for (let task of allTasks) {
       // Skip already reviewed or auto-reviewed tasks
-      if (task.status === 'Reviewed' || task.status === 'Auto-Reviewed') {
+      if (task.status === StockTakeTaskStatus.Reviewed || task.status === StockTakeTaskStatus.AutoReviewed) {
         continue;
       }
 
@@ -1689,5 +1806,17 @@ export class InventoryStockTakeDetailComponent implements OnInit {
     }
 
     return false;
+  }
+
+  /**
+   * Format the value display for task counts
+   * Returns formatted string like "2 (1,234.50)" or just "2" if value is 0
+   */
+  formatValueDisplay(count: number, value: number): string {
+    if (value === 0) {
+      return count.toString();
+    }
+    const formattedValue = value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return `${count} (${formattedValue})`;
   }
 }

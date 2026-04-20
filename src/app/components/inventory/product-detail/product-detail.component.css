@@ -1,6 +1,190 @@
-/* .modal-dialog {
-    max-width: 100%;
-    width: auto !important;
-    display: block;
-}
+/* Product Detail Component Styles
+   Matches shared detail component styling
 */
+
+/* Page background wrapper */
+.detail-page-background {
+  background-color: #f5f6f7;
+  min-height: 100vh;
+  display: block;
+}
+
+/* Main header - match appconfig-detail with paper-like shadow */
+.main-header {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  margin: 20px auto 0 auto;
+  max-width: 1200px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.main-header h5 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.main-header h5 a {
+  color: #0d6efd;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.main-header h5 a:hover {
+  text-decoration: underline;
+  color: #0a58ca;
+}
+
+.main-header h5 i {
+  margin: 0 8px;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Card styling - Appconfig width with responsive height and paper-like shadow */
+.card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+  max-width: 1200px;
+  margin: 20px auto;
+  min-height: calc(100vh - 150px);
+  background-color: #ffffff;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* Card body - standard padding */
+.card-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+/* Form labels */
+.col-form-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #495057;
+}
+
+/* Form controls */
+.form-control {
+  font-size: 0.95rem;
+}
+
+.form-control:read-only {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+/* Tabs */
+.tabs-container {
+  margin-top: 20px;
+}
+
+.nav-tabs {
+  display: flex;
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 15px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.nav-item {
+  margin-right: 5px;
+}
+
+.nav-link {
+  display: block;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  color: #0d6efd;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+}
+
+.nav-link.active {
+  color: #495057;
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
+  border-bottom: 2px solid #fff;
+  font-weight: 600;
+}
+
+.tab-content {
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background: #fff;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+/* Product Info Section */
+.product-info-section {
+  margin-bottom: 20px;
+}
+
+/* Barcode Section */
+.barcode-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e9ecef;
+}
+
+/* Logs Section */
+.logs-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e9ecef;
+}
+
+/* Loading spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-header {
+    padding: 10px;
+  }
+
+  .main-header h5 {
+    font-size: 1.1rem;
+  }
+
+  .card {
+    min-height: calc(100vh - 120px);
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .nav-tabs {
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+  }
+}

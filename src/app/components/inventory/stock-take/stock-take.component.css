@@ -1,8 +1,143 @@
-.stock-take-root { padding: 12px; }
-.stock-take-root .list { margin-bottom: 16px; }
-table { width: 100%; border-collapse: collapse; }
-th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
-.editor { margin-top: 12px; max-width: 600px; }
-.form-row { margin-bottom: 8px; display:flex; gap:8px; align-items:center; }
-.form-row label { width: 140px; font-weight:600; }
-.actions { margin-top: 8px; display:flex; gap:8px; }
+/* Inventory Stock Take Component Styles
+   Matches shared detail component styling
+*/
+
+/* Page background wrapper */
+.stock-take-root {
+  background-color: #f5f6f7;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Main Header */
+.stock-take-root h3 {
+  padding: 15px 40px;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  margin: 0 auto 20px auto;
+  max-width: 1200px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Card/Container */
+.stock-take-root .list,
+.stock-take-root .editor {
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+  max-width: 1200px;
+  margin: 20px auto;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Table Styling */
+.stock-take-root table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-take-root thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  padding: 0.75rem 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  color: #495057;
+}
+
+.stock-take-root tbody tr {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.stock-take-root tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.stock-take-root tbody td {
+  padding: 0.75rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Form Styling */
+.stock-take-root .form-row {
+  margin-bottom: 15px;
+  padding: 0 20px;
+}
+
+.stock-take-root .form-row label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.stock-take-root .form-row input,
+.stock-take-root .form-row textarea,
+.stock-take-root .form-row select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.stock-take-root .form-row input:focus,
+.stock-take-root .form-row textarea:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  outline: none;
+}
+
+/* Actions */
+.stock-take-root .actions {
+  padding: 15px 20px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.stock-take-root .actions button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Loading */
+.stock-take-root > div:first-child {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stock-take-root {
+    padding: 10px;
+  }
+
+  .stock-take-root h3 {
+    padding: 10px 15px;
+    font-size: 1.25rem;
+  }
+
+  .stock-take-root .list,
+  .stock-take-root .editor {
+    margin: 10px;
+  }
+
+  .stock-take-root table {
+    font-size: 0.75rem;
+  }
+
+  .stock-take-root .form-row {
+    padding: 0 15px;
+  }
+}

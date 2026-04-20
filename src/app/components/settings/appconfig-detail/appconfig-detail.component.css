@@ -1,0 +1,388 @@
+/* App Configuration Detail Component Styles
+   Matches shared detail component styling
+*/
+
+/* Page background wrapper */
+.detail-page-background {
+  background-color: #f5f6f7;
+  min-height: 100vh;
+  display: block;
+}
+
+/* Main header - match appconfig-detail with paper-like shadow */
+.main-header {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  margin: 20px auto 0 auto;
+  max-width: 1200px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.main-header h5 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.main-header h5 a {
+  color: #0d6efd;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.main-header h5 a:hover {
+  text-decoration: underline;
+  color: #0a58ca;
+}
+
+.main-header h5 i {
+  margin: 0 8px;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Card styling - Appconfig width with responsive height and paper-like shadow */
+.card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+  max-width: 1200px;
+  margin: 20px auto;
+  min-height: calc(100vh - 150px);
+  background-color: #ffffff;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* Card body - standard padding */
+.card-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+/* Form section */
+.form-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.form-control:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+select.form-control {
+  cursor: pointer;
+}
+
+.required {
+  color: #dc3545;
+}
+
+/* Tabs */
+.tabs-container {
+  margin-top: 20px;
+}
+
+.nav-tabs {
+  display: flex;
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 15px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.nav-item {
+  margin-right: 5px;
+}
+
+.nav-link {
+  display: block;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  color: #0d6efd;
+  text-decoration: none;
+  transition: all 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.nav-link:hover {
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+}
+
+.nav-link.active {
+  color: #495057;
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
+  border-bottom: 2px solid #fff;
+  font-weight: 600;
+}
+
+.tab-content {
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background: #fff;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+/* Smart Form */
+.smart-form-container {
+  min-height: 300px;
+}
+
+.form-toolbar {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+}
+
+.form-field-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.form-field-row:hover {
+  background-color: #f8f9fa;
+}
+
+.form-field-row:last-child {
+  border-bottom: none;
+}
+
+.field-name {
+  flex: 0 0 200px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.field-value {
+  flex: 1;
+}
+
+.field-value input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.field-value input[type="number"],
+.field-value input[type="text"] {
+  max-width: 400px;
+}
+
+.complex-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: #e9ecef;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.field-actions {
+  flex: 0 0 auto;
+}
+
+/* JSON Editor */
+.json-editor-container {
+  position: relative;
+}
+
+.json-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.json-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.json-status.valid {
+  background: #d4edda;
+  color: #155724;
+}
+
+.json-status.invalid {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.json-textarea {
+  width: 100%;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  resize: vertical;
+  background: #f8f9fa;
+  line-height: 1.5;
+}
+
+.json-textarea:focus {
+  background: #fff;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.json-textarea.invalid {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+.json-error {
+  margin-top: 10px;
+  padding: 12px;
+  background: #f8d7da;
+  color: #721c24;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Read-only JSON */
+.read-only-json {
+  margin-top: 20px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.read-only-json h4 {
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.read-only-json pre {
+  background: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #212529;
+}
+
+/* Loading spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-header {
+    padding: 10px;
+  }
+
+  .main-header h5 {
+    font-size: 1.1rem;
+  }
+
+  .card {
+    min-height: calc(100vh - 120px);
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .form-section {
+    padding: 15px;
+  }
+
+  .form-field-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .field-name {
+    margin-bottom: 5px;
+  }
+
+  .field-value {
+    width: 100%;
+  }
+
+  .field-value input[type="number"],
+  .field-value input[type="text"] {
+    max-width: 100%;
+  }
+
+  .nav-tabs {
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+  }
+}

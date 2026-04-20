@@ -1,0 +1,321 @@
+/* List Component Styles
+   Responsive width and height for table columns
+*/
+
+/* Page background wrapper - covers entire component area */
+.detail-page-background {
+  background-color: #f5f6f7;  /* Lighter gray for page background */
+  min-height: 100vh;
+  display: block;
+}
+
+/* Main Header - with title and actions */
+.main-header {
+  padding: 15px 40px;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  margin: 20px auto 0 auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.main-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* Selection Info */
+.selection-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.selected-count {
+  font-weight: 600;
+  color: #198754;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;  /* Thin margin between buttons */
+}
+
+.action-buttons .btn {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+}
+
+/* Search input button group */
+.input-group .btn-group .btn {
+  padding: 0.375rem 0.75rem;
+}
+
+.input-group-append {
+  display: flex;
+}
+
+/* Remove top margin from pagination */
+app-pagination {
+  margin-top: 0 !important;
+  display: block;
+  padding-top: 0;
+}
+
+app-pagination .d-flex {
+  margin-top: 0 !important;
+}
+
+.main-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Card Styles - responsive width and height with paper-like shadow */
+.card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin: 20px auto;
+  background-color: #ffffff;
+  min-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.card-body {
+  padding: 1.25rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Search Header */
+.search-header label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.input-group {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  width: 100%;
+}
+
+.input-group .form-control {
+  flex: 1;
+  min-width: 0;
+  border-right: none;
+}
+
+.input-group-append {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.input-group .btn-group {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.input-group .btn {
+  border-left: none;
+  white-space: nowrap;
+}
+
+.input-group .btn:first-child {
+  border-left: 1px solid #ced4da;
+}
+
+/* Action Bar */
+.action-bar {
+  padding: 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #e9ecef;
+  margin: 0;
+}
+
+.selection-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selected-count {
+  font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn {
+  font-size: 1rem;
+}
+
+.btn-link {
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.dropdown-menu {
+  min-width: 200px;
+}
+
+.dropdown-item {
+  padding: 8px 15px;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.dropdown-item i {
+  margin-right: 8px;
+}
+
+/* Table Styling */
+.table {
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  margin-top: 0;
+}
+
+.table thead th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 2px solid #b6d4fe;
+  background-color: #cfe2ff !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.table tbody td {
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table-primary {
+  background-color: #cfe2ff !important;
+  border-color: #b6d4fe;
+}
+
+/* Checkbox styling */
+.form-check-input {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+/* Clickable links */
+.table td a {
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.table td a:hover {
+  text-decoration: underline;
+}
+
+/* Loading spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* No data state */
+.text-center.py-5 i {
+  opacity: 0.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-header {
+    padding: 10px 15px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .main-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .card {
+    margin: 10px;
+    min-height: calc(100vh - 150px);
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .table {
+    font-size: 0.75rem;
+  }
+
+  .input-group {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .input-group .btn {
+    border-left: 1px solid #ced4da;
+    border-top: none;
+  }
+}

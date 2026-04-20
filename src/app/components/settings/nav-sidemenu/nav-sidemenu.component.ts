@@ -23,7 +23,10 @@ import { environment } from '../../../../environments/environment';
 export class NavSidemenuComponent implements OnInit{
   @Output() toggleLogout = new EventEmitter();
   modulesDto: ModulesDto[] = [];
-  
+
+  // Track expanded modules
+  expandedModules: Set<number> = new Set();
+
   // User section
   username: string = 'User';
   showUserMenu: boolean = false;
@@ -102,6 +105,18 @@ export class NavSidemenuComponent implements OnInit{
   toggleDatabaseMenu() {
     this.showDatabaseMenu = !this.showDatabaseMenu;
     this.showUserMenu = false;
+  }
+
+  toggleModule(index: number) {
+    if (this.expandedModules.has(index)) {
+      this.expandedModules.delete(index);
+    } else {
+      this.expandedModules.add(index);
+    }
+  }
+
+  isModuleExpanded(index: number): boolean {
+    return this.expandedModules.has(index);
   }
 
   logout() {

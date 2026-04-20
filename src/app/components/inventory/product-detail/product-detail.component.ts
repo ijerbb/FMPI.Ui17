@@ -154,11 +154,29 @@ export class ProductDetailComponent implements OnInit{
     var tempBarcode = this.vendorBarcode.replace(/\s/g, "").trim();
     var productBarcodeDto = new ProductBarcodeDto();
     productBarcodeDto.barcode = tempBarcode;
-    this.httpService.excludeBarcode(productBarcodeDto).subscribe((res) => {
-      if(res) {
-        this.alertService.setSuccessAlert();
+    this.httpService.excludeBarcode(productBarcodeDto).subscribe({
+      next: (res) => {
+        if(res && res.success) {
+          this.alertService.setSuccessAlert();
+          this.barcodeToExclusionList = false;
+          this._isAuthorizedUser = false;
+          this._authorizedUserPassword = "";
+          this.vendorBarcode = "";
+          document.getElementById("confirmModalClose")?.click();
+        } else {
+          this.alertService.setCustomErrorAlert(res?.message || "Failed to exclude barcode");
+        }
+      },
+      error: (err) => {
+        this.alertService.setCustomErrorAlert("Error occurred while excluding barcode");
       }
     });
+  }
+
+  resetExclusionState(){
+    this.barcodeToExclusionList = false;
+    this._isAuthorizedUser = false;
+    this._authorizedUserPassword = "";
   }
 
   exclusionAccessOverride(){

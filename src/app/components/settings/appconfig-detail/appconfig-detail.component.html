@@ -1,0 +1,236 @@
+<div class="detail-page-background">
+  <div class="main-header">
+      <h5>
+        <a routerLink="/settings/appconfig" class="header-link">Application Configuration</a>
+        <i class="bi bi-chevron-right"></i>
+        <span *ngIf="isEditMode">New</span>
+        <span *ngIf="!isEditMode">Details</span>
+        <span *ngIf="config.key && !isEditMode"> of {{ config.key }}</span>
+      </h5>
+  </div>
+
+  <div class="card">
+  <div class="card-body">
+    <app-action-menu [toggleAdd]="true" (onAdd)="onAdd()" [toggleSave]="isEditMode" (onSave)="save()" [togglePrint]="false" [toggleEdit]="isEditMode" (onEdit)="onEdit()"></app-action-menu>
+    
+    <!-- Form Section -->
+    <div class="form-section">
+    <!-- Key Field -->
+    <div class="form-group">
+      <label for="key">Key <span class="required">*</span></label>
+      <input type="text" 
+             id="key" 
+             class="form-control"
+             [(ngModel)]="config.key"
+             [disabled]="!isEditMode"
+             placeholder="e.g., featureFlags, appSettings">
+    </div>
+
+    <!-- Description Field -->
+    <div class="form-group">
+      <label for="description">Description</label>
+      <input type="text" 
+             id="description" 
+             class="form-control"
+             [(ngModel)]="config.description"
+             [disabled]="!isEditMode"
+             placeholder="Brief description of this configuration">
+    </div>
+
+    <!-- Category Field -->
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select id="category" 
+              class="form-control"
+              [(ngModel)]="config.category"
+              [disabled]="!isEditMode">
+        <option *ngFor="let cat of categories" [value]="cat">
+          {{ cat }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tabs - Show in both edit and view mode -->
+  <div class="tabs-container">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link"
+           [class.active]="activeTab === 'form'"
+           (click)="switchToFormTab()">
+          <i class="bi bi-ui-checks"></i> Smart Form
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link"
+           [class.active]="activeTab === 'json'"
+           (click)="switchToJsonTab()">
+          <i class="bi bi-code-slash"></i> JSON Editor
+        </a>
+      </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Smart Form Tab -->
+      <div *ngIf="activeTab === 'form'" class="tab-pane active">
+        <div class="smart-form-container">
+          <div class="form-toolbar" *ngIf="isEditMode">
+            <button class="btn btn-sm btn-secondary" (click)="addField()">
+              <i class="bi bi-plus-lg"></i> Add Field
+            </button>
+          </div>
+
+          <div *ngIf="!formFields || getFormFieldKeys().length === 0" class="empty-state">
+            <i class="bi bi-inbox display-4 text-muted"></i>
+            <p class="mt-3 text-muted">No fields defined.</p>
+          </div>
+
+          <div *ngFor="let fieldName of getFormFieldKeys()" class="form-field-row">
+            <div class="field-name">
+              <strong>{{ fieldName }}</strong>
+            </div>
+            <div class="field-value">
+              <!-- Boolean -->
+              <div *ngIf="getFieldType(formFields[fieldName]) === 'boolean'" class="form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       [id]="'chk_' + fieldName"
+                       [checked]="formFields[fieldName]"
+                       [disabled]="!isEditMode"
+                       (change)="updateFieldValue(fieldName, ($any($event.target).checked))">
+                <label class="form-check-label" [for]="'chk_' + fieldName">
+                  {{ formFields[fieldName] ? 'True' : 'False' }}
+                </label>
+              </div>
+
+              <!-- Number -->
+              <input *ngIf="getFieldType(formFields[fieldName]) === 'number'"
+                     type="number"
+                     class="form-control"
+                     [value]="formFields[fieldName]"
+                     [disabled]="!isEditMode"
+                     (change)="updateFieldValue(fieldName, $any($event.target).valueAsNumber)">
+
+              <!-- String -->
+              <input *ngIf="getFieldType(formFields[fieldName]) === 'string'"
+                     type="text"
+                     class="form-control"
+                     [value]="formFields[fieldName]"
+                     [disabled]="!isEditMode"
+                     (change)="updateFieldValue(fieldName, $any($event.target).value)">
+              
+              <!-- Object/Array (read-only in simple form) -->
+              <span *ngIf="getFieldType(formFields[fieldName]) === 'object' || getFieldType(formFields[fieldName]) === 'array'" 
+                    class="complex-type-badge">
+                <i class="bi bi-info-circle"></i> {{ getFieldType(formFields[fieldName]) }} - Edit in JSON tab
+              </span>
+            </div>
+            <div class="field-actions">
+              <button class="btn btn-sm btn-outline-danger" (click)="removeField(fieldName)" [disabled]="!isEditMode">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JSON Editor Tab -->
+      <div *ngIf="activeTab === 'json'" class="tab-pane active">
+        <div class="json-editor-container">
+          <div class="json-toolbar">
+            <button class="btn btn-sm btn-secondary" 
+                    (click)="formatJson()"
+                    *ngIf="isEditMode">
+              <i class="bi bi-magic"></i> Format JSON
+            </button>
+            <span class="json-status" [class.valid]="jsonValid" [class.invalid]="!jsonValid">
+              <i class="bi" [ngClass]="jsonValid ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+              {{ jsonValid ? 'Valid JSON' : 'Invalid JSON' }}
+              <span *ngIf="!isEditMode" class="ms-2 text-muted">(Read-only)</span>
+            </span>
+          </div>
+          <textarea class="json-textarea"
+                    [ngModel]="jsonValue"
+                    (ngModelChange)="jsonValue = $event; validateJson()"
+                    [class.invalid]="!jsonValid"
+                    [disabled]="!isEditMode"
+                    rows="15"
+                    placeholder='{"key": "value"}'></textarea>
+          <div *ngIf="jsonError" class="json-error">
+            <i class="bi bi-exclamation-triangle-fill"></i> {{ jsonError }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Field Modal -->
+<div class="modal fade" id="addFieldModal" tabindex="-1" role="dialog" aria-labelledby="addFieldModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addFieldModalLabel">
+          <i class="bi bi-plus-lg"></i> Add New Field
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeAddFieldModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="fieldName" class="form-label">Field Name <span class="required">*</span></label>
+          <input type="text"
+                 id="fieldName"
+                 class="form-control"
+                 [(ngModel)]="newFieldName"
+                 placeholder="e.g., isEnabled, maxRetries">
+        </div>
+        <div class="mb-3">
+          <label for="fieldType" class="form-label">Field Type <span class="required">*</span></label>
+          <select id="fieldType"
+                  class="form-control"
+                  [(ngModel)]="newFieldType">
+            <option value="string">String</option>
+            <option value="number">Number</option>
+            <option value="boolean">Boolean</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddFieldModal()">
+          <i class="bi bi-x-circle"></i> Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="confirmAddField()">
+          <i class="bi bi-check-lg"></i> Add Field
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Field Modal -->
+<div class="modal fade" id="deleteFieldModal" tabindex="-1" role="dialog" aria-labelledby="deleteFieldModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteFieldModalLabel">
+          <i class="bi bi-exclamation-triangle text-warning"></i> Confirm Delete
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeDeleteFieldModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the field <strong>"{{fieldToDelete}}"</strong>?</p>
+        <p class="text-muted mb-0"><small>This action cannot be undone.</small></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDeleteFieldModal()">
+          <i class="bi bi-x-circle"></i> Cancel
+        </button>
+        <button type="button" class="btn btn-danger" (click)="confirmDeleteField()">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>

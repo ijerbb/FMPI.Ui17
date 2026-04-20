@@ -7,13 +7,18 @@ import { ProductSearchDto } from '../../../models/dto/productSearchDto';
 import { ProductPricesDto } from '../../../models/dto/productPricesDto';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ResponseListDto } from '../../../models/dto/responseListDto';
+import { PaginationComponent } from '../../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-product-inquiry',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, PaginationComponent],
   templateUrl: './product-inquiry.component.html',
-  styleUrls: ['../../settings/main/main.component.css', './product-inquiry.component.css']
+  styleUrls: [
+    '../../settings/main/main.component.css',
+    './product-inquiry.component.css',
+    '../../shared/detail/detail.component.css'
+  ]
 })
 export class ProductInquiryComponent implements OnInit{
   barcodeStr:string = "";
@@ -71,17 +76,13 @@ export class ProductInquiryComponent implements OnInit{
 
   getHistory(pageNo: number){
     this.productInquiries = [];
-    this.pageStart = 0;
-    this.pageEnd = 0;
-    this.pageNum = 0;
-    this.totalRecords = 0;
     this.isScanSuccess = false;
     if(this.barcodeStr != "") {
       this.httpService.getProductInquiry(this.barcodeStr, pageNo).subscribe(result=>{
         this.qtyOnHand = 0;
         this.isItemSelected = true;
         this.isSearchSuccess = true;
-        this.isScanSuccess = result.header != null
+        this.isScanSuccess = result.header != null;
         this.pageStart = result.pageStart;
         this.pageEnd = result.pageEnd;
         this.pageNum = result.pageNum;
@@ -108,6 +109,7 @@ export class ProductInquiryComponent implements OnInit{
         result.details.forEach(value=>{
           let prodInq: productInquiryDto = new productInquiryDto();
           prodInq.moduleType = value.moduleType;
+          prodInq.moduleTypeName = value.moduleTypeName || value.moduleType;
           prodInq.transDate =  value.transDate;
           prodInq.transNum = value.transNum;
           prodInq.transName = value.transName;
@@ -125,5 +127,9 @@ export class ProductInquiryComponent implements OnInit{
     if(this.pageEnd >= pageNo && (pageNo>=this.pageStart)) {
       this.getHistory(pageNo);
     }
-  }  
+  }
+
+  onPageChange(pageNo: number): void {
+    this.getHistory(pageNo);
+  }
 }

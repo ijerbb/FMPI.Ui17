@@ -1,0 +1,17 @@
+<!-- Payee List Component -->
+<!-- Uses reusable list component -->
+
+<app-list
+  [config]="config"
+  [transactions]="filteredPayees"
+  [totalRecords]="totalRecords"
+  [pageNum]="pageNum"
+  [pageSize]="pageSize"
+  [loading]="loading"
+  [enableBulkActions]="config.enableBulkActions || false"
+  [bulkActions]="config.bulkActions || []"
+  (pageChange)="onPageChange($event)"
+  (search)="onSearch($event)"
+  (newTransaction)="onNew()"
+  (bulkAction)="onBulkAction($event)">
+</app-list>

@@ -1,0 +1,145 @@
+<div class="detail-page-background">
+  <div class="main-header">
+    <div class="header-content">
+      <h2>{{ config.displayName || config.title }}</h2>
+      <div class="header-actions">
+        <!-- Selection Info (only when items selected) -->
+        <span *ngIf="enableBulkActions && selectedItems.size > 0" class="selection-info">
+          <span class="selected-count">
+            <i class="bi bi-check-circle-fill"></i> {{ selectedItems.size }} selected
+          </span>
+          <button class="btn btn-link text-secondary btn-sm" (click)="selectedItems.clear(); updateSelectAll();">
+            <i class="bi bi-x-circle"></i> Clear
+          </button>
+        </span>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons" *ngIf="config.newRoute || (enableBulkActions && bulkActions && bulkActions.length > 0)">
+          <!-- New Button -->
+          <a *ngIf="config.newRoute" [routerLink]="[config.newRoute]" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg"></i> New {{ config.displayName || config.title }}
+          </a>
+          
+          <!-- Bulk Actions Dropdown -->
+          <div class="dropdown" *ngIf="enableBulkActions && bulkActions && bulkActions.length > 0 && selectedItems.size > 0">
+            <button class="btn btn-primary btn-sm dropdown-toggle" type="button"
+                    (click)="toggleBulkActionDropdown()"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+              <i class="bi bi-gear-fill"></i> Actions
+            </button>
+            <ul class="dropdown-menu" [class.show]="showBulkActionDropdown">
+              <li *ngFor="let action of bulkActions">
+                <a class="dropdown-item" href="#" (click)="onBulkAction(action.action)">
+                  {{ action.label }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+  <div class="col-sm-12 search-header">
+    <div class="card">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-md-12">
+            <label><b>Search Criteria</b></label>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-12">
+            <div class="input-group">
+              <input type="search"
+                     class="form-control"
+                     [placeholder]="'Search ' + getSearchFieldNames() + '...'"
+                     [(ngModel)]="searchInput"
+                     (ngModelChange)="onSearchInputChange()">
+              <div class="input-group-append">
+                <div class="btn-group" role="group">
+                  <button class="btn btn-secondary" type="button" (click)="onClearSearch()" title="Clear search">
+                    <i class="bi bi-x-circle"></i> Clear
+                  </button>
+                  <button class="btn btn-secondary" type="button" (click)="onRefresh()" title="Refresh">
+                    <i class="bi bi-arrow-repeat"></i> Refresh
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Loading State -->
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2 text-muted">Loading {{ config.displayName?.toLowerCase() || 'items' }}...</p>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-responsive" *ngIf="!loading && transactions.length > 0">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr class="table-primary">
+                <th *ngIf="enableBulkActions" style="width: 40px;">
+                  <input type="checkbox"
+                         class="form-check-input"
+                         [checked]="selectAll"
+                         (change)="toggleSelectAll()">
+                </th>
+                <th *ngFor="let column of config.columns">
+                  {{ column.header }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of transactions">
+                <td *ngIf="enableBulkActions">
+                  <input type="checkbox"
+                         class="form-check-input"
+                         [checked]="getItemSysPk(item) && selectedItems.has(getItemSysPk(item)!)"
+                         (change)="toggleSelection(getItemSysPk(item)!)">
+                </td>
+                <td *ngFor="let column of config.columns">
+                  <ng-container *ngIf="(column.isLink || column.clickable) && getItemSysPk(item); else noLink">
+                    <a [routerLink]="[config.detailRoutePrefix, getItemSysPk(item)]"
+                       class="text-primary fw-bold"
+                       style="cursor: pointer; text-decoration: none;">
+                      {{ getColumnValue(item, column.field) || '-' }}
+                    </a>
+                  </ng-container>
+                  <ng-template #noLink>
+                    <span>{{ getColumnValue(item, column.field) || '-' }}</span>
+                  </ng-template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- No Data State -->
+        <div *ngIf="!loading && transactions.length === 0" class="text-center py-5">
+          <i class="bi bi-inbox display-4 text-muted"></i>
+          <h5 class="mt-3 text-muted">No {{ config.displayName?.toLowerCase() || 'items' }} found</h5>
+          <p class="text-muted" *ngIf="config.newRoute">Click "New {{ config.displayName || 'Item' }}" to create one.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pagination -->
+<app-pagination
+  [pageNum]="pageNum"
+  [pageSize]="pageSize"
+  [totalRecords]="totalRecords"
+  (pageChange)="onPageChange($event)">
+</app-pagination>
+
+</div>

@@ -1,1 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Body background - off-white for better card contrast */
+body {
+  background-color: #f5f6f7 !important;  /* Lighter gray matching detail components */
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure wrapper elements don't override body background */
+#wrapper,
+#page-content-wrapper,
+.detail-page-background {
+  background-color: #f5f6f7 !important;
+  min-height: 100vh;
+}

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserDto } from '../../../models/dto/userDto';
 import { HttpService } from '../../../services/http.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -15,8 +15,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class UserDetailComponent implements OnInit {
   user: UserDto = new UserDto();
-
-  toggleSave = new EventEmitter<boolean>(); 
 
   constructor(private httpService: HttpService, private route: ActivatedRoute, private alertService:AlertService) { }
 
@@ -45,7 +43,7 @@ export class UserDetailComponent implements OnInit {
 
   verifyPasswordMatch(){
     if(this.user.password == this.user.confirmpassword){
-      this.toggleSave.emit(true);
+      // Passwords match
     }
   }
 

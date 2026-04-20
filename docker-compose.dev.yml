@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  fmpi-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - ASPNETCORE_ENVIRONMENT=Development
+    container_name: fmpi-ui-dev
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./dotnet-devcert.crt:/usr/share/nginx/html/fmpicert.crt:ro
+      - ./dotnet-devcert.key:/usr/share/nginx/html/fmpicert.key:ro
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: unless-stopped

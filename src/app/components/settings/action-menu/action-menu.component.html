@@ -1,7 +1,37 @@
-<div class="actionmenucontainer">
-    <button class="btn btn-outline-success me-2" type="button" 
-        [disabled]="!saveStatus"
-    (click)="onSavedClicked()"><i class="bi bi-sd-card"></i> Save</button>
-    <button class="btn btn-outline-primary me-2" type="button" [disabled]="!printStatus"
-    (click)="onPrintClicked()"><i class="bi bi-printer"></i> Print</button>
+<div class="action-menu-container">
+  <div class="action-btn-group" role="group">
+    <button class="btn action-btn"
+            type="button"
+            [class.btn-primary]="addStatus"
+            [class.btn-outline-primary]="!addStatus"
+            [disabled]="!addStatus"
+            (click)="onAddClicked()">
+      <i class="bi bi-plus-lg"></i> Add
+    </button>
+    <button class="btn action-btn"
+            type="button"
+            [class.btn-dark]="editStatus"
+            [class.btn-outline-dark]="!editStatus"
+            [class.text-white]="editStatus"
+            [disabled]="!editStatus"
+            (click)="onEditClicked()">
+      <i class="bi" [ngClass]="editStatus ? 'bi-x-circle' : 'bi-pencil'"></i> {{ editStatus ? 'Cancel' : 'Edit' }}
+    </button>
+    <button class="btn action-btn"
+            type="button"
+            [class.btn-success]="saveStatus"
+            [class.btn-outline-success]="!saveStatus"
+            [disabled]="!saveStatus"
+            (click)="onSavedClicked()">
+      <i class="bi bi-sd-card"></i> Save
+    </button>
+    <button class="btn action-btn"
+            type="button"
+            [class.btn-primary]="printStatus"
+            [class.btn-outline-primary]="!printStatus"
+            [disabled]="!printStatus"
+            (click)="onPrintClicked()">
+      <i class="bi bi-printer"></i> Print
+    </button>
+  </div>
 </div>

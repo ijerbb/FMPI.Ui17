@@ -1,3 +1,35 @@
-.actionmenucontainer {
-    margin-bottom: 20px;
+.action-menu-container {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* Use custom class name to avoid Bootstrap conflicts */
+.action-btn-group {
+  display: flex !important;
+  justify-content: flex-end !important;  /* Right align the button group */
+  gap: 0 !important;
+}
+
+.action-btn-group .action-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  min-width: 80px !important;  /* Smaller minimum width */
+  padding: 6px 12px !important;  /* Tighter padding */
+  border-radius: 0 !important;
+  text-align: center !important;
+  font-size: 0.9rem !important;  /* Slightly smaller font */
+  width: auto !important;  /* Don't stretch to fill */
+}
+
+/* Round first button's left corners */
+.action-btn-group .action-btn:first-child {
+  border-radius: 0.375rem 0 0 0.375rem !important;
+}
+
+/* Round last button's right corners */
+.action-btn-group .action-btn:last-child {
+  border-radius: 0 0.375rem 0.375rem 0 !important;
 }

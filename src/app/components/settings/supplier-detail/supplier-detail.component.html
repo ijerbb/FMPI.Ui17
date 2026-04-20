@@ -1,0 +1,104 @@
+<div class="main-header">
+    <h5>
+      <a routerLink="/settings/supplier" class="header-link">Supplier</a>
+      <i class="bi bi-chevron-right"></i>
+      <span *ngIf="isEditMode">New</span>
+      <span *ngIf="!isEditMode">Details</span>
+      <span *ngIf="supplier.userPK && !isEditMode"> of {{ supplier.userPK }}</span>
+    </h5>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <app-action-menu [toggleAdd]="true" (onAdd)="onAdd()" [toggleSave]="isEditMode" (onSave)="save()" [togglePrint]="false" [toggleEdit]="isEditMode" (onEdit)="onEdit()"></app-action-menu>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading supplier...</p>
+    </div>
+
+    <!-- Form Section -->
+    <div *ngIf="!loading" class="form-section">
+      <!-- Code Field -->
+      <div class="form-group">
+        <label for="userPK">Code <span class="required">*</span></label>
+        <input type="text"
+               id="userPK"
+               class="form-control"
+               [(ngModel)]="supplier.userPK"
+               [disabled]="!isEditMode"
+               placeholder="e.g., SUPL001">
+      </div>
+
+      <!-- Name Field -->
+      <div class="form-group">
+        <label for="name">Name <span class="required">*</span></label>
+        <input type="text"
+               id="name"
+               class="form-control"
+               [(ngModel)]="supplier.name"
+               [disabled]="!isEditMode"
+               placeholder="Supplier full name">
+      </div>
+
+      <!-- TIN/VAT Number Field -->
+      <div class="form-group">
+        <label for="tINVATNumber">TIN/VAT Number</label>
+        <input type="text"
+               id="tINVATNumber"
+               class="form-control"
+               [(ngModel)]="supplier.tINVATNumber"
+               [disabled]="!isEditMode"
+               placeholder="Tax identification number">
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link"
+             [class.active]="activeTab === 'moreInfo'"
+             (click)="switchToMoreInfoTab()">
+            <i class="bi bi-person-badge"></i> More Info
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             [class.active]="activeTab === 'systemInfo'"
+             (click)="switchToSystemInfoTab()">
+            <i class="bi bi-gear-fill"></i> System Info
+          </a>
+        </li>
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- More Info Tab -->
+        <div *ngIf="activeTab === 'moreInfo'" class="tab-pane active">
+          <div class="more-info-container">
+            <p class="text-muted">Additional supplier information will be displayed here.</p>
+          </div>
+        </div>
+
+        <!-- System Info Tab -->
+        <div *ngIf="activeTab === 'systemInfo'" class="tab-pane active">
+          <div class="system-info-container">
+            <!-- Module Field (Read-only) -->
+            <div class="form-group">
+              <label for="module">Module</label>
+              <input type="text"
+                     id="module"
+                     class="form-control"
+                     [value]="supplier.module"
+                     disabled>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

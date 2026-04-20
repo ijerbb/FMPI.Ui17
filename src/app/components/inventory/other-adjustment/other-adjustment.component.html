@@ -1,0 +1,17 @@
+<!-- Other Adjustment Component -->
+<!-- Uses reusable list component -->
+
+<app-list
+  [config]="config"
+  [transactions]="transactions"
+  [totalRecords]="totalRecords"
+  [pageNum]="pageNum"
+  [pageSize]="pageSize"
+  [loading]="loading"
+  (pageChange)="onPageChange($event)"
+  (search)="onSearch($event)"
+  (newTransaction)="onNewTransaction()"
+  (editTransaction)="onEditTransaction($event)"
+  (viewTransaction)="onViewTransaction($event)"
+  (printTransaction)="onPrintTransaction($event)">
+</app-list>

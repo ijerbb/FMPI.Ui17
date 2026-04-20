@@ -26,12 +26,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let user of users">
+                <tr *ngFor="let user of paginatedUsers">
                   <td><a routerLink="/userdetails/{{user.id}}"><i class="bi bi-pencil"></i></a></td>
                     <td>{{ user.code }}</td>
                     <td>{{ user.name }}</td>
                 </tr>
             </tbody>
         </table>
+
+        <app-pagination
+          [pageNum]="pageNum"
+          [pageSize]="pageSize"
+          [totalRecords]="totalRecords"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
     </div>
 </div>

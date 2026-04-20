@@ -14,15 +14,16 @@
 <!-- Backdrop for loading overlay -->
 <div class="modal-backdrop fade" [class.show]="isLoading" [style.display]="isLoading ? 'block' : 'none'" *ngIf="isLoading"></div>
 
-<div class="main-header">
-    <h5> <a routerLink="/inventorystocktake">Stock Take Sessions</a> 
-      <i class="bi bi-chevron-right"></i>Details
-    </h5>
-</div>
+<div class="detail-page-background">
+  <div class="main-header">
+      <h5> <a routerLink="/inventorystocktake">Stock Take Sessions</a>
+        <i class="bi bi-chevron-right"></i>Details
+      </h5>
+  </div>
 
-<div class="card">
+  <div class="card">
   <div class="card-body">
-    <app-action-menu [toggleSave]="togSave" (onSave)="save()" [togglePrint]="togPrint" (onPrint)="onPrint()"></app-action-menu>
+    <app-action-menu [toggleSave]="true" (onSave)="save()" [togglePrint]="true" (onPrint)="onPrint()"></app-action-menu>
     <form>
       <div class="form-group row">
         <label for="inputName" class="col-sm-2 col-form-label">Name</label>
@@ -85,7 +86,7 @@
                 <td class="text-center">
                   <span class="clickable-total" title="Tasks counted by a single user, regardless how many times" (click)="onTotalClick('Counted')">
                     <i class="bi bi-person-check" style="color: #0dcaf0; margin-right: 4px;"></i>
-                    <b>Counted:</b><br>{{ taskCounts.counted }}
+                    <b>Counted:</b><br>{{ formatValueDisplay(taskCounts.counted, isAdministrator ? taskCounts.countedValue : 0) }}
                   </span>
                 </td>
                 <td rowspan="2" class="text-center align-middle">
@@ -111,7 +112,7 @@
                 <td class="text-center">
                   <span class="clickable-total" title="Tasks that has not be counted but with Expected Qty" (click)="onTotalClick('Auto-Counted')">
                     <i class="bi bi-calculator" style="color: #0dcaf0; margin-right: 4px;"></i>
-                    <b>Auto-Counted:</b><br>{{ taskCounts.autoCounted }}
+                    <b>Auto-Counted:</b><br>{{ formatValueDisplay(taskCounts.autoCounted, isAdministrator ? taskCounts.autoCountedValue : 0) }}
                   </span>
                 </td>
                 <td class="text-center">
@@ -126,12 +127,62 @@
         </div>
       </div>
 
-      <!-- Filter hint -->
-      <div class="row">
+      <!-- Batch Create Missing Adjustments Button (Temporary Cleanup Tool) -->
+      <div class="row mt-2" *ngIf="session && session.id">
         <div class="col-sm-10 offset-sm-2">
-          <small class="text-muted">
-            <i class="bi bi-info-circle"></i> Click on any status or total above to filter the tasks list below.
+          <button type="button" class="btn btn-sm btn-outline-primary" (click)="openBatchConfirmModal()" 
+                  title="Create adjusting entries for Reviewed/Auto-Reviewed tasks that don't have adjustments yet"
+                  [disabled]="isBatchProcessing">
+            <i class="bi bi-arrow-clockwise" [class.spin]="isBatchProcessing"></i>
+            {{ isBatchProcessing ? 'Processing...' : 'Create Missing Adjustments' }}
+          </button>
+          <small class="text-muted ms-2" *ngIf="batchMessage && !isBatchProcessing">
+            <i class="bi bi-info-circle"></i> {{ batchMessage }}
           </small>
+        </div>
+      </div>
+
+      <!-- Batch Processing Loading Indicator -->
+      <div class="row mt-2" *ngIf="isBatchProcessing">
+        <div class="col-sm-10 offset-sm-2">
+          <div class="alert alert-info d-flex align-items-center" role="alert">
+            <div class="spinner-border spinner-border-sm me-3 text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="flex-grow-1">
+              <strong><i class="bi bi-hourglass-split"></i> Processing Batch Adjustments...</strong>
+              <p class="mb-0 mt-1 small">{{ batchMessage }}</p>
+              <p class="mb-0 mt-2 small text-muted">
+                <i class="bi bi-info-circle"></i> This may take several minutes. Please do not close this window.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batch Confirmation Modal -->
+      <div class="modal fade" id="batchConfirmModal" tabindex="-1" role="dialog" aria-labelledby="batchConfirmLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content border-primary">
+            <div class="modal-header bg-primary text-white">
+              <h5 class="modal-title">
+                <i class="bi bi-arrow-clockwise"></i> Confirm Batch Processing
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p><strong>Warning:</strong> This will create adjusting entries for ALL Reviewed and Auto-Reviewed tasks that don't have adjustments yet.</p>
+              <p class="mb-0">This process may take several minutes depending on the number of tasks. Do you want to continue?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="bi bi-x-circle"></i> Cancel
+              </button>
+              <button type="button" class="btn btn-primary" (click)="confirmBatchProcessing()">
+                <i class="bi bi-check-circle"></i> Yes, Process All
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -156,6 +207,9 @@
         <button type="button" class="btn-close btn-close-white ms-2" aria-label="Close" (click)="clearFilter()" style="font-size: 0.6rem;"></button>
       </span>
     </h6>
+    <small class="text-muted d-block mb-2">
+      <i class="bi bi-info-circle"></i> Click on any status or total above to filter the tasks list below.
+    </small>
     <div class="row mb-2">
       <div class="form-group row">
         <label for="inputBarcode" class="col-sm-2 col-form-label">Barcode</label>
@@ -227,17 +281,35 @@
                         <tr class="table-light">
                           <th>Date Issue</th>
                           <th>Module Type</th>
-                          <th>User PK</th>
+                          <th>Doc No</th>
+                          <th>Ref No</th>
                           <th class="text-end">Qty In</th>
                           <th class="text-end">Qty Out</th>
                           <th class="text-end">Running Balance</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let trans of t.transactionHistory">
-                          <td>{{ trans.dateIssue | date:'yyyy-MM-dd' }}</td>
-                          <td>{{ trans.moduleTypeName || trans.moduleType }}</td>
+                        <tr *ngFor="let trans of t.transactionHistory"
+                            [style.background-color]="trans.isStockTakeAdjustment ? 'rgb(163, 207, 187)' : null"
+                            [style.border-left]="trans.isStockTakeAdjustment ? '4px solid rgb(163, 207, 187)' : null">
+                          <td>
+                            {{ trans.dateIssue | date:'yyyy-MM-dd' }}
+                            <i *ngIf="trans.isStockTakeAdjustment"
+                               class="bi bi-check-circle-fill ms-2"
+                               [style.color]="'rgb(163, 207, 187)'"
+                               title="Stock Take Adjustment"></i>
+                          </td>
+                          <td>
+                            {{ trans.moduleTypeName || trans.moduleType }}
+                            <span *ngIf="trans.isStockTakeAdjustment"
+                                  class="badge ms-2"
+                                  [style.background-color]="'rgb(163, 207, 187)'"
+                                  [style.color]="'#000'">
+                              <i class="bi bi-clipboard-check"></i> Stock Take Adj
+                            </span>
+                          </td>
                           <td>{{ trans.userPK }}</td>
+                          <td>{{ trans.accountDocumentNum }}</td>
                           <td class="text-end">{{ trans.baseQtyIn }}</td>
                           <td class="text-end">{{ trans.baseQtyOut }}</td>
                           <td class="text-end fw-bold">{{ trans.runningBalance }}</td>
@@ -245,7 +317,7 @@
                       </tbody>
                       <tfoot>
                         <tr class="table-active">
-                          <td colspan="5" class="text-end fw-bold">Outstanding Balance:</td>
+                          <td colspan="6" class="text-end fw-bold">Outstanding Balance:</td>
                           <td class="text-end fw-bold fs-5">{{ getOutstandingBalance(t.transactionHistory) }}</td>
                         </tr>
                       </tfoot>
@@ -253,6 +325,12 @@
                   </div>
                   <div *ngIf="!t.transactionHistory || t.transactionHistory.length === 0" class="alert alert-info mb-0">
                     <i class="bi bi-info-circle"></i> No transaction history found for this product.
+                  </div>
+                  
+                  <!-- No Adjustment Needed Message -->
+                  <div *ngIf="t.noAdjustmentNeeded" class="alert alert-success mt-3 mb-0">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>No Adjustment Created:</strong> {{ t.noAdjustmentMessage }}
                   </div>
                 </div>
               </td>
@@ -314,27 +392,13 @@
         </tbody>
       </table>
     </div>
-    <div class="d-flex" *ngIf="tasksRes.lists.length > 0">
-      <ul class="pagination">
-        <li class="page-item">
-          <a class="page-link" tabindex="-1" (click)="clickPageTasks(tasksRes.pageNum-1)">Previous</a>
-        </li>
-        <ng-container *ngFor="let pageNo of tasksRes.pageNoList">
-          <li class="page-item" [ngClass]="{'active' : tasksRes.pageNum === pageNo }"><a class="page-link" (click)="clickPageTasks(pageNo)">{{ pageNo }}</a></li>
-        </ng-container>
-        <li class="page-item">
-          <a class="page-link" (click)="clickPageTasks(tasksRes.pageNum+1)">Next</a>
-        </li>
-      </ul>
-      <div class="ms-auto">
-        <label>{{ 1 + ((tasksRes.pageNum - 1) * 10) }} - {{ tasksRes.totalRecords > (tasksRes.pageNum * 10) ? (tasksRes.pageNum * 10) : tasksRes.totalRecords }} of {{ tasksRes.totalRecords }}</label>
-      </div>
-    </div>
-    <div *ngIf="tasksRes.lists.length == 0">
-      <div class="ms-auto" style="text-align: center;">
-        <label>No tasks found</label>
-      </div>
-    </div>
+
+    <app-pagination
+      [pageNum]="tasksRes.pageNum"
+      [pageSize]="10"
+      [totalRecords]="tasksRes.totalRecords"
+      (pageChange)="clickPageTasks($event)">
+    </app-pagination>
   </div>
 </div>
   <button id="btnCountConfirm" class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#countConfirm" hidden>Count</button>
@@ -696,4 +760,8 @@
     <button (click)="save()">Save</button>
     <button (click)="cancel()">Cancel</button>
   </div>
-</div> -->
+    </div>
+  </div>
+  </div>
+</div>
+-->

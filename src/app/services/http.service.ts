@@ -21,6 +21,8 @@ import { map } from 'rxjs';
 import { MenusDto } from '../models/dto/menusDto';
 import { TransactionHistoryDto } from '../models/dto/transactionHistoryDto';
 import { DatabaseConfig } from '../models/dto/databaseConfig';
+import { BirTransactionDto, RemoveTransactionRequest, TransactionHeaderForBirDto, BirTransactionFilterDto } from '../models/dto/birTransactionDto';
+import { TransactionHeaderDto } from '../models/dto/transactionHeaderDto';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +85,10 @@ export class HttpService {
     return this.http.post<ResponseListDto<ProductPricesDto>>(environment.apiUrl + '/Products/' + this.getProductAdvancedSearchAction, productSearchDto);
   }
 
+  public getProductBySearch(searchTerm: string, pageNo: number = 1): Observable<ResponseListDto<ProductPricesDto>>{
+    return this.http.get<ResponseListDto<ProductPricesDto>>(environment.apiUrl + '/Products/GetProductsBySearch?searchTerm=' + encodeURIComponent(searchTerm) + '&pageNo=' + pageNo);
+  }
+
   public isBarcodeExist(barcode: string): Observable<ResponseDto>{
     return this.http.get<ResponseDto>(environment.apiUrl + '/Products/' + this.isBarcodeExistAction + "?barcode=" + barcode)
   }
@@ -112,6 +118,10 @@ export class HttpService {
     return this.http.get<ResponseListDto<StockTakeTaskDto>>(environment.apiUrl + '/Inventory/' + this.getTasksBySessionAction + '?sessionId=' + sessionId + '&pageNum=' + pageNo);
   }
 
+  public getTasksBySessionAndStatus(sessionId: number, status: string, pageNo: number = 1): Observable<ResponseListDto<StockTakeTaskDto>> {
+    return this.http.get<ResponseListDto<StockTakeTaskDto>>(environment.apiUrl + '/Inventory/GetTasksBySessionAndStatus?sessionId=' + sessionId + '&status=' + encodeURIComponent(status) + '&pageNum=' + pageNo);
+  }
+
   public getTaskBySessionAndProduct(sessionId: number, productId: number): Observable<StockTakeTaskDto> {
     return this.http.get<StockTakeTaskDto>(environment.apiUrl + '/Inventory/' + this.getTaskBySessionProductAction + '?sessionId=' + sessionId + '&productId=' + productId);
   }
@@ -131,6 +141,10 @@ export class HttpService {
 
   public countTasksBySession(sessionId: number): Observable<ResponseDto> {
     return this.http.get<ResponseDto>(environment.apiUrl + '/Inventory/' + this.countTasksBySessionAction + '?sessionId=' + sessionId);
+  }
+
+  public getTaskValuesBySession(sessionId: number): Observable<ResponseDto> {
+    return this.http.get<ResponseDto>(environment.apiUrl + '/Inventory/GetTaskValuesBySession?sessionId=' + sessionId);
   }
 
   public recordStockCountEntry(dto: StockCountEntryDto): Observable<any> {
@@ -156,6 +170,20 @@ export class HttpService {
 
   public updateStockTakeTask(dto: StockTakeTaskDto): Observable<ResponseDto> {
     return this.http.patch<ResponseDto>(environment.apiUrl + '/Inventory/' + this.updateStockTakeTaskAction, dto);
+  }
+
+  public confirmCountAndCreateAdjustment(taskId: number, userId: number): Observable<ResponseDto> {
+    return this.http.post<ResponseDto>(
+      environment.apiUrl + '/Inventory/ConfirmCountAndCreateAdjustment?taskId=' + taskId + '&userId=' + userId,
+      {}
+    );
+  }
+
+  public batchCreateMissingAdjustments(sessionId: number, userId: number): Observable<ResponseDto> {
+    return this.http.post<ResponseDto>(
+      environment.apiUrl + '/Inventory/BatchCreateMissingAdjustments?sessionId=' + sessionId + '&userId=' + userId,
+      {}
+    );
   }
 
   public getAllUsers() {
@@ -212,5 +240,86 @@ export class HttpService {
 
   public switchDatabase(userDto: UserDto): Observable<ResponseDto> {
     return this.http.post<ResponseDto>(environment.apiUrl + '/Settings/' + this.switchDatabaseAction, userDto);
+  }
+
+  // BIR Posting Methods
+  public getBirTransactions(filter: any): Observable<ResponseListDto<BirTransactionDto>> {
+    return this.http.post<ResponseListDto<BirTransactionDto>>(environment.apiUrl + '/BirPosting/GetBirTransactions', filter);
+  }
+
+  public removeBirTransaction(request: RemoveTransactionRequest): Observable<ResponseDto> {
+    return this.http.post<ResponseDto>(environment.apiUrl + '/BirPosting/RemoveBirTransaction', request);
+  }
+
+  public postBirTransactions(transactionIds: number[]): Observable<ResponseDto> {
+    return this.http.post<ResponseDto>(environment.apiUrl + '/BirPosting/PostBirTransactions', transactionIds);
+  }
+
+  public getTransactionHeadersByModuleType(moduleType: string, pageNum: number, year?: string | null, period?: number | null): Observable<ResponseListDto<TransactionHeaderForBirDto>> {
+    let url = environment.apiUrl + '/BirPosting/GetTransactionHeadersByModuleType?moduleType=' + moduleType + '&pageNum=' + pageNum;
+    if (year) url += '&year=' + year;
+    if (period) url += '&period=' + period;
+    return this.http.get<ResponseListDto<TransactionHeaderForBirDto>>(url);
+  }
+
+  public getBirTransactionTotals(filter: BirTransactionFilterDto): Observable<any> {
+    return this.http.post(environment.apiUrl + '/BirPosting/GetBirTransactionTotals', filter);
+  }
+
+  // Summary Report Methods (March 15, 2026)
+  public getBirTransactionSummaryReport(filter: BirTransactionFilterDto): Observable<any> {
+    return this.http.post(environment.apiUrl + '/BirPosting/GetBirTransactionSummaryReport', filter);
+  }
+
+  public checkExistingTransactionHeaders(year: string, period: string, taxType: number): Observable<any> {
+    return this.http.get(environment.apiUrl + '/BirPosting/CheckExistingTransactionHeaders?year=' + year + '&period=' + period + '&taxType=' + taxType);
+  }
+
+  public saveTransactionsToBir(saveDto: any): Observable<any> {
+    return this.http.post(environment.apiUrl + '/BirPosting/SaveTransactionsToBir', saveDto);
+  }
+
+  public addBirTransaction(addDto: any): Observable<any> {
+    return this.http.post(environment.apiUrl + '/BirPosting/AddBirTransaction', addDto);
+  }
+
+  // Generic Transaction Methods (for reusable transaction list)
+  public getTransactionsByModuleType(moduleType: string, pageNum: number, pageSize: number, criteria?: any): Observable<ResponseListDto<TransactionHeaderDto>> {
+    if (criteria && Object.keys(criteria).length > 0) {
+      // Use POST endpoint for search criteria
+      const url = environment.apiUrl + '/Transactions/GetByModuleTypeWithCriteria';
+      const body = {
+        moduleType: moduleType,
+        pageNum: pageNum,
+        pageSize: pageSize,
+        criteria: criteria
+      };
+      return this.http.post<ResponseListDto<TransactionHeaderDto>>(url, body);
+    } else {
+      // Use GET endpoint when no criteria
+      const url = environment.apiUrl + '/Transactions/GetByModuleType?moduleType=' + moduleType + '&pageNum=' + pageNum + '&pageSize=' + pageSize;
+      return this.http.get<ResponseListDto<TransactionHeaderDto>>(url);
+    }
+  }
+
+  public getTransactionById(id: number): Observable<ResponseDto> {
+    return this.http.get<ResponseDto>(environment.apiUrl + '/Transactions/GetDetail?id=' + id);
+  }
+
+  public createTransaction(transactionDto: any): Observable<ResponseDto> {
+    return this.http.post<ResponseDto>(environment.apiUrl + '/Transactions/Create', transactionDto);
+  }
+
+  public updateTransaction(transactionDto: any): Observable<ResponseDto> {
+    return this.http.post<ResponseDto>(environment.apiUrl + '/Transactions/Update', transactionDto);
+  }
+
+  public voidTransaction(id: number, reason?: string): Observable<ResponseDto> {
+    const url = environment.apiUrl + '/Transactions/Void?id=' + id + (reason ? '&reason=' + reason : '');
+    return this.http.post<ResponseDto>(url, null);
+  }
+
+  public printTransaction(id: number): Observable<Blob> {
+    return this.http.get(environment.apiUrl + '/Transactions/Print?id=' + id, { responseType: 'blob' });
   }
 }

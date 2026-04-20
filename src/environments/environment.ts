@@ -4,9 +4,10 @@
 
 export const environment = {
     production: false,
-    apiUrl: "https://10.0.0.246:8443/api"
+    environmentName: 'local',
+    apiUrl: "https://localhost:8443/api"  // Local backend URL
   };
-  
+
   /*
    * For easier debugging in development mode, you can import the following file
    * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

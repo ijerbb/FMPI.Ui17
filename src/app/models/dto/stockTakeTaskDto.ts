@@ -23,4 +23,9 @@ export class StockTakeTaskDto {
     stockCountEntries?: StockCountEntryDto[];
     // List of transaction history for the product (1 year before current date)
     transactionHistory?: TransactionHistoryDto[];
+    
+    // Indicates if no adjusting entry was created because counted qty matched expected qty
+    noAdjustmentNeeded?: boolean;
+    // Message explaining why no adjustment was created
+    noAdjustmentMessage?: string;
 }

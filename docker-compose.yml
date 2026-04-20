@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  fmpi-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - ASPNETCORE_ENVIRONMENT=Production
+    container_name: fmpi-ui
+    ports:
+      - "4200:4200"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: unless-stopped

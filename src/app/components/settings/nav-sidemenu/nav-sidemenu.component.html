@@ -1,10 +1,30 @@
 <div id="sidebar-wrapper">
     <ul class="sidebar-nav">
         <li><a routerLink="/">Dashboard</a></li>
-        <li *ngFor="let group of modulesDto;">
-            <a>{{ group.Module }}</a>
 
-            <ul *ngIf="group.Menus.length > 0">
+        <!-- Accounting Menu (Static) -->
+        <li>
+            <a class="menu-parent" (click)="toggleModule(-1)">
+                <span class="menu-text">Accounting</span>
+                <i class="bi" [ngClass]="isModuleExpanded(-1) ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+            </a>
+            <ul *ngIf="isModuleExpanded(-1)">
+                <li>
+                    <a routerLink="/bir-posting-slsp" routerLinkActive="active">
+                        BIR Posting
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Dynamic Menus from API -->
+        <li *ngFor="let group of modulesDto; let i = index;">
+            <a class="menu-parent" (click)="toggleModule(i)">
+                <span class="menu-text">{{ group.Module }}</span>
+                <i class="bi" [ngClass]="isModuleExpanded(i) ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+            </a>
+
+            <ul *ngIf="isModuleExpanded(i) && group.Menus.length > 0">
             <li *ngFor="let menu of group.Menus;">
                 <a [routerLink]="menu.RouterLink" routerLinkActive="active">
                 {{ menu.Menu }}

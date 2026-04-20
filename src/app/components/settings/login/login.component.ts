@@ -18,6 +18,7 @@ export class LoginComponent {
   userid: string = "";
   userpassword: string = "";
   errorMsg: string = "";
+  loginError: string = "";
   selectedDatabase: string = "";
   databases: DatabaseConfig[] = [];
 
@@ -71,7 +72,8 @@ export class LoginComponent {
     }
 
     this.user.databaseName = this.selectedDatabase;
-    
+    this.loginError = "";
+
     this.httpService.verifyLogin(this.user).subscribe((result:ResponseDto) => {
       if(result.success){
         localStorage.setItem('sessionToken', result.data as string);
@@ -79,7 +81,7 @@ export class LoginComponent {
         this.verifyCred.emit(true);
         this.router.navigate(['/']);
       } else {
-        this.errorMsg = "Invalid User Id / Password";
+        this.loginError = "Invalid User Id / Password";
       }
     });
   }

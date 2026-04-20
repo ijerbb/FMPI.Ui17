@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://your-production-server:8443",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

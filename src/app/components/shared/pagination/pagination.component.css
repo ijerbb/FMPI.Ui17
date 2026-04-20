@@ -1,0 +1,18 @@
+/* Pagination Component Styles */
+.pagination {
+  margin: 0;
+}
+
+.pagination .page-link {
+  cursor: pointer;
+  user-select: none;
+}
+
+.pagination .page-item.disabled .page-link {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.text-muted {
+  font-size: 0.875rem;
+}

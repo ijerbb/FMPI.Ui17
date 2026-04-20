@@ -15,6 +15,10 @@
 
 # Stage 1
 FROM node:lts-alpine as build
+
+ARG ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+
 WORKDIR /app
 COPY . ./
 COPY package*.json ./
@@ -29,6 +33,10 @@ WORKDIR /app
 COPY --from=build /app/dist/FMPI.Ui/browser /usr/share/nginx/html
 EXPOSE 4200
 COPY /nginx.conf  /etc/nginx/conf.d/default.conf
-COPY /fmpicert.crt /usr/share/nginx/html
-COPY /fmpicert.key /usr/share/nginx/html
+
+# Copy environment-specific certificates
+# Production (Docker): fmpicert.crt/fmpicert.key
+# Development (local Docker): dotnet-devcert.crt/dotnet-devcert.key
+COPY /fmpicert.crt /usr/share/nginx/html/
+COPY /fmpicert.key /usr/share/nginx/html/
 
