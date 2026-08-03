@@ -43,6 +43,8 @@ export class TransactionHeaderForBirDto {
     module_TransH?: string | null;
     moduleType_TransH?: string | null;
     totalAmount_TransH?: number | null;
+    tinNo?: string | null;
+    particulars?: string | null;
 }
 
 export class RemoveTransactionRequest {

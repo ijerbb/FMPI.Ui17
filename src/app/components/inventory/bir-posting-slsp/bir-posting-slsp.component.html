@@ -104,12 +104,14 @@
                   <th>Trans Num</th>
                   <th>Module Type</th>
                   <th>Account Name</th>
+                  <th>TIN</th>
+                  <th>Particulars</th>
                   <th class="text-end">Amount</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngIf="transactionHeaders.length === 0">
-                  <td colspan="6" class="text-center text-muted">
+                  <td colspan="8" class="text-center text-muted">
                     No transaction headers found
                   </td>
                 </tr>
@@ -125,6 +127,8 @@
                   <td>{{header.userPK_TransH || 'N/A'}}</td>
                   <td>{{getModuleTypeDescription(header.moduleType_TransH)}}</td>
                   <td>{{header.accountName_TransH}}</td>
+                  <td>{{header.tinNo || 'N/A'}}</td>
+                  <td>{{header.particulars || 'N/A'}}</td>
                   <td class="text-end">{{header.totalAmount_TransH | currency:'':'':'1.2-2'}}</td>
                 </tr>
               </tbody>

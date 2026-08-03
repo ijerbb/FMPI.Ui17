@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
 
 import { PrintPageComponent } from './print-page.component';
 
@@ -8,7 +10,7 @@ describe('PrintPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PrintPageComponent]
+      imports: [HttpClientTestingModule, RouterModule.forRoot([]), PrintPageComponent]
     })
     .compileComponents();
     

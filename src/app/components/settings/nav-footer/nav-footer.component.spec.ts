@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
 
 import { NavFooterComponent } from './nav-footer.component';
 
@@ -8,7 +10,7 @@ describe('NavFooterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavFooterComponent]
+      imports: [HttpClientTestingModule, RouterModule.forRoot([]), NavFooterComponent]
     })
     .compileComponents();
     

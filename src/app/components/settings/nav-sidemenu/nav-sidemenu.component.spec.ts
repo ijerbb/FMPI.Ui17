@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
 
 import { NavSidemenuComponent } from './nav-sidemenu.component';
 
@@ -8,7 +10,7 @@ describe('NavSidemenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavSidemenuComponent]
+      imports: [HttpClientTestingModule, RouterModule.forRoot([]), NavSidemenuComponent]
     })
     .compileComponents();
     

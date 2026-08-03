@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
 
 import { ProductInquiryComponent } from './product-inquiry.component';
 
@@ -8,7 +10,7 @@ describe('ProductInquiryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProductInquiryComponent]
+      imports: [HttpClientTestingModule, RouterModule.forRoot([]), ProductInquiryComponent]
     })
     .compileComponents();
     
